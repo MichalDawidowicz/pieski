@@ -4,6 +4,7 @@ import 'package:ogloszenia/components/my_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ogloszenia/helper/helper_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
@@ -30,13 +31,23 @@ class _RegisterPageState extends State<RegisterPage> {
     //try to create user
     try {
       //create
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
       //kolo
-      Navigator.pop(context);
+      createUserDocument(userCredential);
+      if(context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       displayMessageToUser(e.code, context);
+    }
+  }
+
+  Future<void>createUserDocument(UserCredential? userCredential) async{
+    if(userCredential !=null && userCredential.user!=null){
+      await FirebaseFirestore.instance.collection("Users").doc(userCredential.user!.email).set(
+          {
+            'email': userCredential.user!.email
+          });
     }
   }
 
