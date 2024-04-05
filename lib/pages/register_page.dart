@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ogloszenia/helper/helper_functions.dart';
 
@@ -45,52 +44,54 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            // logo
-            Icon(
-              Icons.accessibility,
-              size: 80,
-              color: Theme.of(context).colorScheme.inversePrimary,
-            ),
-            const SizedBox(height: 25),
-            //app name
-            Text(
-              "PIESKOWE OGŁOSZENIA",
-              style: TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 25),
-            //email textfield
-            MyTextField(
-                hintText: "Email",
-                obscureText: false,
-                controller: emailController),
-            const SizedBox(height: 11),
-            //password textfield
-            MyTextField(
-                hintText: "Hasło",
-                obscureText: true,
-                controller: passwordController),
-            const SizedBox(height: 22),
-            //zarejestruj
-            MyButton(text: "Zarejestruj", onTap: register),
-            const SizedBox(height: 11),
-            //logowanie
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Mam już konto "),
-                GestureDetector(
-                    onTap: widget.onTap,
-                    child: Text(
-                      " Zaloguj się",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ))
-              ],
-            )
-          ]),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              // logo
+              Icon(
+                Icons.accessibility,
+                size: 80,
+                color: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              const SizedBox(height: 25),
+              //app name
+              Text(
+                "PIESKOWE OGŁOSZENIA",
+                style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 25),
+              //email textfield
+              MyTextField(
+                  hintText: "Email",
+                  obscureText: false,
+                  controller: emailController),
+              const SizedBox(height: 11),
+              //password textfield
+              MyTextField(
+                  hintText: "Hasło",
+                  obscureText: true,
+                  controller: passwordController),
+              const SizedBox(height: 22),
+              //zarejestruj
+              MyButton(text: "Zarejestruj", onTap: register),
+              const SizedBox(height: 11),
+              //logowanie
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Mam już konto "),
+                  GestureDetector(
+                      onTap: widget.onTap,
+                      child: Text(
+                        " Zaloguj się",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ))
+                ],
+              )
+            ]),
+          ),
         ),
       ),
     );
