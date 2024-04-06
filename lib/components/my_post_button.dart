@@ -12,7 +12,10 @@ class PostButton extends StatelessWidget {
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(15)),
-        child: Center(child: Icon(Icons.done),),
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.all(10),
+        child: Center(child: Icon(Icons.done,
+        color: Theme.of(context).colorScheme.primary,),),
       ) ,
     );
   }
