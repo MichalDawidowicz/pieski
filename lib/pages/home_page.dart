@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("OGLOSZENIA"),
+        title: Text("DODAJ OGŁOSZENIE"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 0,
         actions: [
@@ -65,37 +65,6 @@ class HomePage extends StatelessWidget {
           PostButton(
             onTap: postMessage,
           ),
-          StreamBuilder(stream: database.getPostStream(),
-              builder: (context,snapshot){
-                if(snapshot.connectionState==ConnectionState.waiting){
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                final posts =snapshot.data!.docs;
-                if(snapshot.data==null || posts.isEmpty){
-                  return const Center(
-                    child: Padding(padding: EdgeInsets.all(25),child: Text("Brak danych"),) ,
-                  );
-                }
-                return Expanded(child: ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (context,index){
-                      final post =posts[index];
-                      String title = post['PostTitle'];
-                      String message = post['PostMessage'];
-                      String userEmail = post['UserEmail'];
-
-                      return ListTile(
-                        title: Text(title),
-                        subtitle: Text(message + userEmail),
-
-
-                      );
-
-                    }));
-              },)
-          
         ],
       ),
     );

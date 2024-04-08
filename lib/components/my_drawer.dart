@@ -17,7 +17,7 @@ class MyDrawer extends StatelessWidget {
           padding: const EdgeInsets.only(left: 25.0),
           child: ListTile(
             leading: Icon(Icons.home),
-            title: Text("HOME"),
+            title: Text("DODAJ OGŁOSZENIE"),
             onTap: (){
               Navigator.pop(context);
             },
@@ -40,7 +40,7 @@ class MyDrawer extends StatelessWidget {
             padding: const EdgeInsets.only(left: 25.0),
             child: ListTile(
               leading: Icon(Icons.list_alt),
-              title: Text("UZYTKOWNICY"),
+              title: Text("OGŁOSZENIA"),
               onTap: (){
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/users_page');
