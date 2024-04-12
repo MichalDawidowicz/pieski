@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ogloszenia/components/my_textfield.dart';
 import 'package:ogloszenia/helper/helper_functions.dart';
 
 import '../components/my_back_button.dart';
@@ -69,7 +67,6 @@ class UsersPage extends StatelessWidget {
                             itemCount: posts.length,
                             itemBuilder: (context, index) {
                               DocumentSnapshot document = posts[index];
-                              String docID = document.id;
 
                               final post = posts[index];
                               String title = post['PostTitle'];
@@ -80,71 +77,6 @@ class UsersPage extends StatelessWidget {
                                 child: ListTile(
                                   title: Text(title),
                                   subtitle: Text(message + "\n" + userEmail),
-                                  trailing: IconButton(
-                                    onPressed: () {
-                                      if (userEmail ==
-                                          FirebaseAuth.instance.currentUser!
-                                              .email) {
-                                        showDialog(
-                                            context: context,
-                                            builder:
-                                                (context) => AlertDialog(
-                                                      content: MyTextField(
-                                                        hintText:
-                                                            "Nowa treść",
-                                                        obscureText: false,
-                                                        controller:
-                                                            editingController,
-                                                      ),
-                                                      actions: [
-                                                        ElevatedButton(
-                                                            onPressed: () =>
-                                                                database.deletePost(docID),
-                                                            child: Text(
-                                                                "Usuń ogłoszenie",
-                                                                style: TextStyle(
-                                                                    color: Theme.of(context)
-                                                                        .colorScheme
-                                                                        .secondary))),
-                                                        ElevatedButton(
-                                                            onPressed: () =>
-                                                                updateMessage(
-                                                                  docID,
-                                                                  editingController
-                                                                      .text,
-                                                                ),
-                                                            child: Text(
-                                                                "zapisz",
-                                                                style: TextStyle(
-                                                                    color: Theme.of(context)
-                                                                        .colorScheme
-                                                                        .inversePrimary))),
-                                                      ],
-                                                    ));
-                                      } else {
-                                        showDialog(
-                                            context: context,
-                                            builder:
-                                                (context) => AlertDialog(
-                                                      content: Text(
-                                                          "Nie masz uprawnień do edycji."),
-                                                      actions: [
-                                                        ElevatedButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                    context),
-                                                            child: Text(
-                                                                "Zamknij",
-                                                                style: TextStyle(
-                                                                    color: Theme.of(context)
-                                                                        .colorScheme
-                                                                        .inversePrimary))),
-                                                      ],
-                                                    ));
-                                      }
-                                    },
-                                    icon: Icon(Icons.settings),
-                                  ),
                                   onTap: () {
                                     Navigator.pop(context);
                                     Navigator.pushNamed(context, '/post_page');

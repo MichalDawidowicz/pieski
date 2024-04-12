@@ -47,6 +47,17 @@ class MyDrawer extends StatelessWidget {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: ListTile(
+              leading: Icon(Icons.person_add),
+              title: Text("MOJE OGŁOSZENIA"),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/my_page');
+              },
+            ),
+          ),
         ],
       ),
     );
