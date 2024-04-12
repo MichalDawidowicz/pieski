@@ -1,4 +1,4 @@
-Zmienić stronę główną na listę ogłoszeń, dokończyć wyświetlanie ogłoszenia po kliknięicu go
+dokończyć wyświetlanie ogłoszenia po kliknięicu go
 Zrobić stronę z ogłoszeniami użytkownika
 Zmodyfikować ekran dodawania ogłoszenia(usunąć ten ekranik z góry, dać tylko przycisk powrotu, dodać foto)
 Ekran edycji - edytowanie wszystkich danych w ogłoszeniu u usiwanie go z potwierdzeniem

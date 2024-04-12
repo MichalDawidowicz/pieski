@@ -20,6 +20,7 @@ class MyDrawer extends StatelessWidget {
             title: Text("DODAJ OGŁOSZENIE"),
             onTap: (){
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/home_page');
             },
           ),
         ),

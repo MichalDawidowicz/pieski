@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ogloszenia/components/my_drawer.dart';
+import 'package:ogloszenia/components/my_back_button.dart';
 import 'package:ogloszenia/components/my_post_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
 import 'package:ogloszenia/database/firestore.dart';
@@ -35,17 +35,18 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("DODAJ OGŁOSZENIE"),
+        leading: MyBackButton(),
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 0,
-        actions: [
-          //logout
-          IconButton(
-            onPressed: logout,
-            icon: Icon(Icons.logout),
-          )
-        ],
+        elevation: 1,
+        // actions: [
+        //   //logout
+        //   IconButton(
+        //     onPressed: logout,
+        //     icon: Icon(Icons.logout),
+        //   )
+        // ],
       ),
-      drawer: MyDrawer(),
+      // drawer: MyDrawer(),
       body: Column(
         children: [
           Padding(
