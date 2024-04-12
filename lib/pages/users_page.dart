@@ -1,23 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_drawer.dart';
-import 'package:ogloszenia/helper/helper_functions.dart';
 
-import '../components/my_back_button.dart';
 import '../database/firestore.dart';
 
 class UsersPage extends StatelessWidget {
   final FirestoreDatabase database = FirestoreDatabase();
   final TextEditingController editingController = TextEditingController();
   UsersPage({super.key});
-  void updateMessage(String? docID, String message) {
-    //post only if title and message is not empty
-    if (editingController.text.isNotEmpty && docID != null) {
-      String post = editingController.text;
-      database.updatePost(docID, post);
-    }
-    editingController.clear();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +49,6 @@ class UsersPage extends StatelessWidget {
                   child: ListView.builder(
                       itemCount: posts.length,
                       itemBuilder: (context, index) {
-                        DocumentSnapshot document = posts[index];
-      
                         final post = posts[index];
                         String title = post['PostTitle'];
                         String message = post['PostMessage'];
@@ -86,7 +73,3 @@ class UsersPage extends StatelessWidget {
   }
 }
 
-// void onTap() {
-//   Navigator.pop(context);
-//   Navigator.pushNamed(context, '/users_page');
-// }

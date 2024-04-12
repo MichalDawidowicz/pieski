@@ -1,4 +1,5 @@
-dokończyć wyświetlanie ogłoszenia po kliknięicu go
-Zrobić stronę z ogłoszeniami użytkownika
-Zmodyfikować ekran dodawania ogłoszenia(usunąć ten ekranik z góry, dać tylko przycisk powrotu, dodać foto)
+dokończyć wyświetlanie ogłoszenia po kliknięicu go, z listy przenosi na ogłoszenie a z moich ogłoszeń przenosi na ogłoszenie które u góry ma dodatkowo 2 buttony(edytuj i usuń)
+Zrobić stronę z ogłoszeniami użytkownika**
+Zmodyfikować ekran dodawania ogłoszenia( dodać foto), ten sam ekran do edycji ogłoszeń ale z wpisanymi danymi
 Ekran edycji - edytowanie wszystkich danych w ogłoszeniu u usiwanie go z potwierdzeniem
+

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ogloszenia/components/my_drawer.dart';
 
-import '../components/my_back2_button.dart';
-import '../components/my_back_button.dart';
+import '../components/my_back3_button.dart';
 
-class PostPage extends StatelessWidget {
-  const PostPage({super.key});
+class MyPostPage extends StatelessWidget {
+  const MyPostPage({super.key});
   // Future String id;
 
   @override
@@ -19,7 +17,7 @@ class PostPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const MyBack2Button(),
+                  const MyBack3Button(),
                   IconButton(onPressed: (){}, icon: Icon(Icons.settings),)
                 ],
               ),

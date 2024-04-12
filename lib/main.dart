@@ -5,6 +5,7 @@ import 'package:ogloszenia/auth/login_or_register.dart';
 import 'package:ogloszenia/firebase_options.dart';
 import 'package:ogloszenia/pages/home_page.dart';
 import 'package:ogloszenia/pages/my_page.dart';
+import 'package:ogloszenia/pages/my_post_page.dart';
 import 'package:ogloszenia/pages/post_page.dart';
 import 'package:ogloszenia/pages/profile_page.dart';
 import 'package:ogloszenia/pages/users_page.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         '/profile_page':(context) =>  ProfilePage(),
         '/users_page':(context) =>  UsersPage(),
         '/post_page':(context) => const PostPage(),
+        '/my_post_page':(context) => const MyPostPage(),
         '/my_page':(context) =>  MyPage(),
 
       },
