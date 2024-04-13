@@ -22,11 +22,13 @@ class FirestoreDatabase {
     final postsStream = FirebaseFirestore.instance.collection('Posts').snapshots();
     return postsStream;
   }
-  
-  // Stream<QuerySnapshot> getUserPost(String? email){
-  //   final userPosts = FirebaseFirestore.instance.collection('Posts').doc('UserEmail').snapshots()==email;
-  //   return userPosts;
-  // }
+
+  Stream<QuerySnapshot> getUserPostStream(String userEmail) {
+    return FirebaseFirestore.instance
+        .collection('Posts')
+        .where('UserEmail', isEqualTo: userEmail)
+        .snapshots();
+  }
 
   Future<void> updatePost(String docID,String newPost){
     return posts.doc(docID).update({
