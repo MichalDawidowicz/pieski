@@ -9,8 +9,9 @@ class MyPostPage extends StatelessWidget {
   final String message;
   final String userEmail;
   final String postID;
+  final String photoUrl;
   MyPostPage({
-    super.key, required this.title, required this.message, required this.userEmail, required this.postID});
+    super.key, required this.title, required this.message, required this.userEmail, required this.postID, required this.photoUrl});
   // Future String id;\
   final FirestoreDatabase database = FirestoreDatabase();
 
@@ -73,17 +74,36 @@ class MyPostPage extends StatelessWidget {
                 IconButton(onPressed:()=>_deletePost(context), icon: Icon(Icons.delete))
               ],
             ),
-            Text(
-              "Tytuł: $title",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "Wiadomość: $message",
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              "ID: $postID",
-              style: TextStyle(fontSize: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10.0),
+                  Text(
+                    "Wiadomość:  $message",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 10.0),
+                  Text(
+                    "Adres email: $userEmail",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 10.0),
+                  // Wyświetlanie zdjęcia
+                  if (photoUrl.isNotEmpty)
+                    Image.network(
+                      photoUrl,
+                      width: MediaQuery.of(context).size.width, // Ustaw szerokość zdjęcia na pełną szerokość ekranu
+                      height: 200.0, // Ustaw wysokość zdjęcia na 200 pikseli (możesz dostosować do własnych preferencji)
+                      fit: BoxFit.cover, // Dopasuj zdjęcie do obszaru wyświetlania
+                    ),
+                ],
+              ),
             ),
           ],
         ),

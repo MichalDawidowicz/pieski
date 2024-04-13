@@ -1,3 +1,2 @@
-Zmodyfikować ekran dodawania ogłoszenia( dodać foto), ten sam ekran do edycji ogłoszeń ale z wpisanymi danymi
 Ekran edycji - edytowanie wszystkich danych w ogłoszeniu
 

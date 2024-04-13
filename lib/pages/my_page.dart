@@ -64,6 +64,7 @@ class MyPage extends StatelessWidget {
                                         title: title,
                                         message: message,
                                         userEmail: userEmail,
+                                        photoUrl: post['Photo'],
                                       ),
                                     ),
                                   );

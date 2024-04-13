@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +12,25 @@ class FirestoreDatabase {
 
 
 
-  Future<void> addPost (String title, String message){
+  Future<void> addPost (String title, String message,String photoUrl){
     return posts.add({
       'UserEmail': user!.email,
       'PostTitle': title,
-      'PostMessage': message
+      'PostMessage': message,
+      'Photo' : photoUrl
     });
   }
+  // Funkcja do przesłania zdjęcia do Firebase Storage
+  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+    // Utwórz referencję do miejsca, gdzie zostanie przechowane zdjęcie w Firebase Storage
+    Reference storageReference = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
+    // Prześlij plik do Firebase Storage
+    await storageReference.putFile(imageFile);
+
+    // Pobierz URL przesłanego obrazu
+    return await storageReference.getDownloadURL();
+  }
   Stream<QuerySnapshot> getPostStream(){
     final postsStream = FirebaseFirestore.instance.collection('Posts').snapshots();
     return postsStream;

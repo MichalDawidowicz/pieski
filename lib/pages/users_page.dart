@@ -54,6 +54,7 @@ class UsersPage extends StatelessWidget {
                         String title = post['PostTitle'];
                         String message = post['PostMessage'];
                         String userEmail = post['UserEmail'];
+                        // String url = post['Photo'];
 
                         return GestureDetector(
                           child: ListTile(
@@ -67,6 +68,7 @@ class UsersPage extends StatelessWidget {
                                     title: title,
                                     message: message,
                                     userEmail: userEmail,
+                                    photoUrl: post['Photo'],
                                   ),
                                 ),
                               );

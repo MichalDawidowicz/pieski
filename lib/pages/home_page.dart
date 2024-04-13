@@ -4,30 +4,95 @@ import 'package:ogloszenia/components/my_back_button.dart';
 import 'package:ogloszenia/components/my_post_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
 import 'package:ogloszenia/database/firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:image/image.dart' as img; // Import biblioteki image
+
 /*
 TODO: zmienić żeby główną stroną były ogłoszenia
  */
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final FirestoreDatabase database = FirestoreDatabase();
 
   final TextEditingController titleController = TextEditingController();
+
   final TextEditingController postController = TextEditingController();
+
+  File? _image;
 
   void logout() {
     FirebaseAuth.instance.signOut();
   }
 
-  void postMessage(){
+  void postMessage()async{
     //post only if title and message is not empty
     if(titleController.text.isNotEmpty && postController.text.isNotEmpty){
       String title = titleController.text;
       String post = postController.text;
-      database.addPost(title, post);
+      String photoUrl ="";
+      if(_image!=null){
+        // Zmniejsz rozmiar zdjęcia przed przesłaniem do Firebase Storage
+        File compressedImage = await compressImage(_image!);
+        // Prześlij zmniejszone zdjęcie do Firebase Storage i uzyskaj jego URL
+        photoUrl = await database.uploadImageToFirebaseStorage(compressedImage);
+      }
+      database.addPost(title, post, photoUrl);
+      // Pokaż SnackBar po zapisaniu wpisu
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Dodano wpis'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      // Pokaż komunikat o błędzie, jeśli tytuł lub treść jest pusta
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Tytuł i treść nie mogą być puste'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
     titleController.clear();
     postController.clear();
+    setState(() {
+      _image = null; // Wyczyść wybrane zdjęcie po dodaniu ogłoszenia
+    });
+  }
+
+  // Funkcja do zmniejszenia rozmiaru zdjęcia
+  Future<File> compressImage(File imageFile) async {
+    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+
+    // Zmniejsz rozmiar zdjęcia do maksymalnej szerokości 800 pikseli
+    img.Image resizedImage = img.copyResize(image!, width: 200,height: 200);
+
+    // Zapisz zmniejszone zdjęcie do pliku tymczasowego
+    final tempDir = await Directory.systemTemp;
+    final compressedImageFile = File('${tempDir.path}/compressed_image.jpg')
+      ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 50)); // 85 to wartość jakości
+
+    return compressedImageFile;
+  }
+
+  // Funkcja do pobrania zdjęcia z galerii lub z aparatu
+  Future getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -47,28 +112,66 @@ class HomePage extends StatelessWidget {
         // ],
       ),
       // drawer: MyDrawer(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(25),
-            child: MyTextField(
-              hintText: "Tytuł",
-              obscureText: false,
-              controller: titleController,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(25),
+              child: MyTextField(
+                hintText: "Tytuł",
+                obscureText: false,
+                controller: titleController,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(25),
-            child: MyTextField(
-              hintText: "Tresc",
-              obscureText: false,
-              controller: postController,
+            Padding(
+              padding: const EdgeInsets.all(25),
+              child: MyTextField(
+                hintText: "Tresc",
+                obscureText: false,
+                controller: postController,
+              ),
             ),
-          ),
-          PostButton(
-            onTap: postMessage,
-          ),
-        ],
+            _image != null
+                ? Image.file(_image!)
+                : IconButton(
+              icon: Icon(Icons.camera),
+              onPressed: () {
+                // Po kliknięciu ikony aparatu, użytkownik może wybrać źródło zdjęcia
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.photo_library),
+                            title: Text('Wybierz z galerii'),
+                            onTap: () {
+                              getImage(ImageSource.gallery);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.photo_camera),
+                            title: Text('Zrób zdjęcie'),
+                            onTap: () {
+                              getImage(ImageSource.camera);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            PostButton(
+              onTap: postMessage,
+            ),
+          ],
+        ),
       ),
     );
   }
