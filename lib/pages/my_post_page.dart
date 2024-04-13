@@ -56,12 +56,12 @@ class MyPostPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0,right: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 20.0,right: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const MyBack3Button(),
+                  MyBack3Button(),
                   // IconButton(onPressed: (){}, icon: Icon(Icons.settings),)
                 ],
               ),

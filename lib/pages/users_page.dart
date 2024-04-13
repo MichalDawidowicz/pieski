@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_drawer.dart';
+import 'package:ogloszenia/pages/post_page.dart';
 
 import '../database/firestore.dart';
 
@@ -53,14 +54,22 @@ class UsersPage extends StatelessWidget {
                         String title = post['PostTitle'];
                         String message = post['PostMessage'];
                         String userEmail = post['UserEmail'];
-      
+
                         return GestureDetector(
                           child: ListTile(
                             title: Text(title),
                             subtitle: Text(message + "\n" + userEmail),
                             onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, '/post_page');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostPage(
+                                    title: title,
+                                    message: message,
+                                    userEmail: userEmail,
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         );
