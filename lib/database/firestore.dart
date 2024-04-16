@@ -43,11 +43,23 @@ class FirestoreDatabase {
         .snapshots();
   }
 
+  Future<void> updatePostTitle(String docID,String newTitle){
+    return posts.doc(docID).update({
+      'PostTitle':newTitle,
+    });
+  }
+  Future<void> updateAll(String docID,String newPost,String newTitle,String newUrl){
+    return posts.doc(docID).update({
+      'PostMessage':newPost,
+      'PostTitle':newTitle,
+      'Photo':newUrl
+    });
+  }
   Future<void> updatePost(String docID,String newPost){
     return posts.doc(docID).update({
-      'PostMessage':newPost
-    });
+      'PostMessage':newPost,
 
+    });
   }
   Future<void> deletePost(String docID){
     return posts.doc(docID).delete();

@@ -8,9 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:image/image.dart' as img; // Import biblioteki image
 
-/*
-TODO: zmienić żeby główną stroną były ogłoszenia
- */
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -90,7 +87,13 @@ class _HomePageState extends State<HomePage> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
-        print('No image selected.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Nie wybrano zdjęcia '),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // print('No image selected.');
       }
     });
   }

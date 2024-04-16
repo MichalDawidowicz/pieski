@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../components/my_back3_button.dart';
 import '../database/firestore.dart';
+import 'edit_my_post.dart';
 
 class MyPostPage extends StatelessWidget {
   final String title;
@@ -15,12 +16,6 @@ class MyPostPage extends StatelessWidget {
   // Future String id;\
   final FirestoreDatabase database = FirestoreDatabase();
 
-  void editPost(BuildContext context) {
-    // Tutaj otwórz okno edycji postu, na przykład poprzez nawigację do innej strony
-    // i przekazanie danych edytowanego postu.
-    // Na potrzeby przykładu, tutaj po prostu cofnij nawigację.
-    Navigator.pop(context);
-  }
   void _deletePost(BuildContext context) {
     // Wyświetlenie okna dialogowego z potwierdzeniem usunięcia
     showDialog(
@@ -70,7 +65,20 @@ class MyPostPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                IconButton(onPressed: ()=> editPost, icon: Icon(Icons.edit)),
+                IconButton(onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditMyPostPage(
+                        postID: postID,
+                        oldPost: message,
+                        oldTitle: title,
+                        oldUrl: photoUrl,
+
+                      ),
+                    ),
+                  );
+                }, icon: Icon(Icons.edit)),
                 IconButton(onPressed:()=>_deletePost(context), icon: Icon(Icons.delete))
               ],
             ),
