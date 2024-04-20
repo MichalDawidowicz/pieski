@@ -25,10 +25,6 @@ class PostPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const MyBack2Button(),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.settings),
-                  )
                 ],
               ),
             ),

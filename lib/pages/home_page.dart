@@ -6,6 +6,7 @@ import 'package:ogloszenia/database/firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:image/image.dart' as img; // Import biblioteki image
+import 'package:ogloszenia/pages/users_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -18,24 +19,33 @@ class _HomePageState extends State<HomePage> {
   final FirestoreDatabase database = FirestoreDatabase();
 
   final TextEditingController titleController = TextEditingController();
-
   final TextEditingController postController = TextEditingController();
-
   File? _image;
 
-  void postMessage()async{
-    //post only if title and message is not empty
-    if(titleController.text.isNotEmpty && postController.text.isNotEmpty){
+  bool isButtonEnabled() {
+    // Sprawdź, czy tytuł, opis i zdjęcie zostały dodane
+    return titleController.text.isNotEmpty &&
+        postController.text.isNotEmpty &&
+        _image != null;
+  }
+
+  void postMessage() async {
+    //post only if title, message, and photoUrl is not empty
+    if (titleController.text.isNotEmpty &&
+        postController.text.isNotEmpty &&
+        _image != null) {
       String title = titleController.text;
       String post = postController.text;
-      String photoUrl ="";
-      if(_image!=null){
-        // Zmniejsz rozmiar zdjęcia przed przesłaniem do Firebase Storage
-        File compressedImage = await compressImage(_image!);
-        // Prześlij zmniejszone zdjęcie do Firebase Storage i uzyskaj jego URL
-        photoUrl = await database.uploadImageToFirebaseStorage(compressedImage);
-      }
+      String photoUrl = "";
+
+      // Zmniejsz rozmiar zdjęcia przed przesłaniem do Firebase Storage
+      File compressedImage = await compressImage(_image!);
+      // Prześlij zmniejszone zdjęcie do Firebase Storage i uzyskaj jego URL
+      photoUrl =
+      await database.uploadImageToFirebaseStorage(compressedImage);
+
       database.addPost(title, post, photoUrl);
+
       // Pokaż SnackBar po zapisaniu wpisu
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -43,20 +53,28 @@ class _HomePageState extends State<HomePage> {
           duration: Duration(seconds: 2),
         ),
       );
+
+      // Wyczyść pola tekstowe i ustawienia po dodaniu wpisu
+      titleController.clear();
+      postController.clear();
+      setState(() {
+        _image = null;
+      });
+
+      // Przejdź na stronę UsersPage po poprawnym dodaniu postu
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => UsersPage()),
+      );
     } else {
-      // Pokaż komunikat o błędzie, jeśli tytuł lub treść jest pusta
+      // Pokaż komunikat o błędzie, jeśli tytuł, opis lub zdjęcie jest puste
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Tytuł i treść nie mogą być puste'),
+          content: Text('Tytuł, treść i zdjęcie są wymagane'),
           duration: Duration(seconds: 2),
         ),
       );
     }
-    titleController.clear();
-    postController.clear();
-    setState(() {
-      _image = null; // Wyczyść wybrane zdjęcie po dodaniu ogłoszenia
-    });
   }
 
   // Funkcja do zmniejszenia rozmiaru zdjęcia
@@ -64,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
 
     // Zmniejsz rozmiar zdjęcia do maksymalnej szerokości 800 pikseli
-    img.Image resizedImage = img.copyResize(image!, width: 200,height: 200);
+    img.Image resizedImage = img.copyResize(image!, width: 200, height: 200);
 
     // Zapisz zmniejszone zdjęcie do pliku tymczasowego
     final tempDir = await Directory.systemTemp;
@@ -99,17 +117,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("DODAJ OGŁOSZENIE"),
         leading: MyBackButton(),
-        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 1,
-        // actions: [
-        //   //logout
-        //   IconButton(
-        //     onPressed: logout,
-        //     icon: Icon(Icons.logout),
-        //   )
-        // ],
       ),
-      // drawer: MyDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -124,7 +133,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(25),
               child: MyTextField(
-                hintText: "Tresc",
+                hintText: "Treść",
                 obscureText: false,
                 controller: postController,
               ),
@@ -166,8 +175,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             PostButton(
-              onTap: postMessage,
-
+              onTap: isButtonEnabled() ? postMessage : null,
             ),
           ],
         ),
