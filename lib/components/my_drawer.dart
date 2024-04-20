@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -56,6 +57,18 @@ class MyDrawer extends StatelessWidget {
               onTap: (){
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/my_page');
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: ListTile(
+              leading: Icon(Icons.person_add),
+              title: Text("WYLOGUJ"),
+              onTap: (){
+                FirebaseAuth.instance.signOut();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/auth_page');
               },
             ),
           ),

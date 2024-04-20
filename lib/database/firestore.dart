@@ -48,6 +48,11 @@ class FirestoreDatabase {
       'PostTitle':newTitle,
     });
   }
+  Future<void> updateUrl(String docID,String newUrl){
+    return posts.doc(docID).update({
+      'Photo':newUrl,
+    });
+  }
   Future<void> updateAll(String docID,String newPost,String newTitle,String newUrl){
     return posts.doc(docID).update({
       'PostMessage':newPost,

@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         // '/post_page':(context) => const PostPage(),
         // '/my_post_page':(context) => MyPostPage(),
         '/my_page':(context) =>  MyPage(),
+        '/auth_page': (context) => AuthPage(),
 
       },
     );

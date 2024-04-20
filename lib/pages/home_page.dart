@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_back_button.dart';
 import 'package:ogloszenia/components/my_post_button.dart';
@@ -23,10 +22,6 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController postController = TextEditingController();
 
   File? _image;
-
-  void logout() {
-    FirebaseAuth.instance.signOut();
-  }
 
   void postMessage()async{
     //post only if title and message is not empty
@@ -172,6 +167,7 @@ class _HomePageState extends State<HomePage> {
             ),
             PostButton(
               onTap: postMessage,
+
             ),
           ],
         ),

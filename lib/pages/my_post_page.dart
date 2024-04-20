@@ -8,11 +8,10 @@ import 'edit_my_post.dart';
 class MyPostPage extends StatelessWidget {
   final String title;
   final String message;
-  final String userEmail;
   final String postID;
   final String photoUrl;
   MyPostPage({
-    super.key, required this.title, required this.message, required this.userEmail, required this.postID, required this.photoUrl});
+    super.key, required this.title, required this.message, required this.postID, required this.photoUrl});
   // Future String id;\
   final FirestoreDatabase database = FirestoreDatabase();
 
@@ -94,11 +93,6 @@ class MyPostPage extends StatelessWidget {
                   SizedBox(height: 10.0),
                   Text(
                     "Wiadomość:  $message",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    "Adres email: $userEmail",
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 10.0),
