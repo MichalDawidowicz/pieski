@@ -9,6 +9,7 @@ class FirestoreDatabase {
   User? user = FirebaseAuth.instance.currentUser;
 
   final CollectionReference posts = FirebaseFirestore.instance.collection("Posts");
+  final CollectionReference offers = FirebaseFirestore.instance.collection("Offers");
 
 
 
@@ -20,6 +21,7 @@ class FirestoreDatabase {
       'Photo' : photoUrl
     });
   }
+
   // Funkcja do przesłania zdjęcia do Firebase Storage
   Future<String> uploadImageToFirebaseStorage(File imageFile) async {
     // Utwórz referencję do miejsca, gdzie zostanie przechowane zdjęcie w Firebase Storage
@@ -35,7 +37,10 @@ class FirestoreDatabase {
     final postsStream = FirebaseFirestore.instance.collection('Posts').snapshots();
     return postsStream;
   }
-
+  Stream<QuerySnapshot> getOfferStream(){
+    final postsStream = FirebaseFirestore.instance.collection('Offers').snapshots();
+    return postsStream;
+  }
   Stream<QuerySnapshot> getUserPostStream(String userEmail) {
     return FirebaseFirestore.instance
         .collection('Posts')
@@ -53,6 +58,8 @@ class FirestoreDatabase {
       'Photo':newUrl,
     });
   }
+
+
   Future<void> updateAll(String docID,String newPost,String newTitle,String newUrl){
     return posts.doc(docID).update({
       'PostMessage':newPost,
@@ -63,10 +70,44 @@ class FirestoreDatabase {
   Future<void> updatePost(String docID,String newPost){
     return posts.doc(docID).update({
       'PostMessage':newPost,
+    });
+  }
 
+  Future<void> addOffer (String name, String message,String photoUrl){
+    return offers.add({
+      'UserEmail': user!.email,
+      'OfferName': name,
+      'OfferText': message,
+      'OfferPhoto' : photoUrl
+    });
+  }
+
+  Future<void> updateOffer(String docID,String newText, String newName, String newUrl){
+    return offers.doc(docID).update({
+      'OfferText':newText,
+      'OfferName':newName,
+      'OfferPhoto':newUrl
+    });
+  }
+  Future<void> updateOfferUrl(String docID,String newUrl){
+    return offers.doc(docID).update({
+      'OfferPhoto':newUrl,
+    });
+  }
+  Future<void> updateOfferName(String docID,String newTitle){
+    return offers.doc(docID).update({
+      'OfferName':newTitle,
+    });
+  }
+  Future<void> updateOfferText(String docID,String newPost){
+    return offers.doc(docID).update({
+      'OfferText':newPost,
     });
   }
   Future<void> deletePost(String docID){
     return posts.doc(docID).delete();
+  }
+  Future<void> deleteOffer(String docID){
+    return offers.doc(docID).delete();
   }
 }

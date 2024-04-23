@@ -17,7 +17,7 @@ class MyDrawer extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 25.0),
           child: ListTile(
-            leading: Icon(Icons.home),
+            leading: Icon(Icons.add),
             title: Text("DODAJ OGŁOSZENIE"),
             onTap: (){
               Navigator.pop(context);
@@ -25,6 +25,17 @@ class MyDrawer extends StatelessWidget {
             },
           ),
         ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: ListTile(
+              leading: Icon(Icons.add),
+              title: Text("DODAJ OFERTE"),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/add_offer');
+              },
+            ),
+          ),
         //profile
           Padding(
             padding: const EdgeInsets.only(left: 25.0),
@@ -52,7 +63,7 @@ class MyDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 25.0),
             child: ListTile(
-              leading: Icon(Icons.person_add),
+              leading: Icon(Icons.playlist_add),
               title: Text("MOJE OGŁOSZENIA"),
               onTap: (){
                 Navigator.pop(context);
@@ -63,7 +74,18 @@ class MyDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 25.0),
             child: ListTile(
-              leading: Icon(Icons.person_add),
+              leading: Icon(Icons.people),
+              title: Text("OFERTY"),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/offers');
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: ListTile(
+              leading: Icon(Icons.logout),
               title: Text("WYLOGUJ"),
               onTap: (){
                 FirebaseAuth.instance.signOut();
