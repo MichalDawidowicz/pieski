@@ -12,13 +12,13 @@ class FirestoreDatabase {
   final CollectionReference offers = FirebaseFirestore.instance.collection("Offers");
 
 
-
   Future<void> addPost (String title, String message,String photoUrl){
     return posts.add({
       'UserEmail': user!.email,
       'PostTitle': title,
       'PostMessage': message,
-      'Photo' : photoUrl
+      'Photo' : photoUrl,
+      'PostState' : 'nowe'
     });
   }
 
@@ -73,6 +73,12 @@ class FirestoreDatabase {
     });
   }
 
+  Future<void> changeState(String docID,String newState){
+    return posts.doc(docID).update({
+      'PostState':newState,
+    });
+  }
+
   Future<void> addOffer (String name, String message,String photoUrl){
     return offers.add({
       'UserEmail': user!.email,
@@ -94,6 +100,7 @@ class FirestoreDatabase {
       'OfferPhoto':newUrl,
     });
   }
+
   Future<void> updateOfferName(String docID,String newTitle){
     return offers.doc(docID).update({
       'OfferName':newTitle,

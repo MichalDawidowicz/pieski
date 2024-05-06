@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:ogloszenia/components/backToMyPage.dart';
 import 'package:ogloszenia/database/firestore.dart';
 import 'package:ogloszenia/pages/my_post_page.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,13 +12,14 @@ class EditMyPostPage extends StatefulWidget {
   final String oldPost;
   final String postID;
   final String oldUrl;
+  final String state;
 
   EditMyPostPage({
     Key? key,
     required this.oldTitle,
     required this.oldPost,
     required this.postID,
-    required this.oldUrl,
+    required this.oldUrl, required this.state,
   }) : super(key: key);
 
   @override
@@ -145,13 +147,14 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/my_page');
-                    },
-                    child: Text("anuluj"),
-                    color: Colors.white60,
-                  ),
+                  // MaterialButton(
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, '/my_page');
+                  //   },
+                  //   child: Text("anuluj"),
+                  //   color: Colors.white60,
+                  // ),
+                  BackToMyPage(),
                   MaterialButton(
                     onPressed: () async {
                       await _uploadImageAndSave();
@@ -175,7 +178,8 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
                               title: newTitle,
                               message: newPost,
                               postID: widget.postID,
-                              photoUrl: photoUrl, // Przekazujemy zaktualizowany URL zdjęcia
+                              photoUrl: photoUrl,
+                              state: widget.state,// Przekazujemy zaktualizowany URL zdjęcia
                             ),
                           ),
                         );

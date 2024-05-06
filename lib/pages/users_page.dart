@@ -54,6 +54,7 @@ class UsersPage extends StatelessWidget {
                         String title = post['PostTitle'];
                         String message = post['PostMessage'];
                         String userEmail = post['UserEmail'];
+
                         // String url = post['Photo'];
 
                         return GestureDetector(
@@ -69,6 +70,7 @@ class UsersPage extends StatelessWidget {
                                     message: message,
                                     userEmail: userEmail,
                                     photoUrl: post['Photo'],
+                                    id: post.id,
                                   ),
                                 ),
                               );
