@@ -11,6 +11,7 @@ import 'package:ogloszenia/pages/offers_page.dart';
 import 'package:ogloszenia/pages/post_page.dart';
 import 'package:ogloszenia/pages/profile_page.dart';
 import 'package:ogloszenia/pages/users_page.dart';
+import 'package:ogloszenia/pages/wspolprace.dart';
 import 'package:ogloszenia/theme/dark_mode.dart';
 import 'package:ogloszenia/theme/light_mode.dart';
 
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         // '/my_post_page':(context) => MyPostPage(),
         '/my_page':(context) =>  MyPage(),
         '/auth_page': (context) => AuthPage(),
+        '/coop': (context) => Coop(),
 
       },
     );

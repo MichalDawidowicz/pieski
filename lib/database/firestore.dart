@@ -18,8 +18,30 @@ class FirestoreDatabase {
       'PostTitle': title,
       'PostMessage': message,
       'Photo' : photoUrl,
-      'PostState' : 'nowe'
+      'PostState' : 'nowe',
+      'Uemail': ''
     });
+  }
+
+
+  Future<String> getPostState(String postId) async {
+    try {
+      // Pobierz dokument o określonym postId z kolekcji "posts"
+      var docSnapshot = await FirebaseFirestore.instance.collection('Posts').doc(postId).get();
+
+      // Sprawdź, czy dokument istnieje
+      if (docSnapshot.exists) {
+        // Jeśli istnieje, zwróć wartość pola 'state'
+        return docSnapshot.data()?['PostState'] ?? "";
+      } else {
+        // Jeśli dokument nie istnieje, zwróć pustą wartość
+        return "";
+      }
+    } catch (e) {
+      // Obsłuż błąd
+      print("Error while fetching post state: $e");
+      throw e; // Rzuć wyjątek, aby móc go obsłużyć w widoku
+    }
   }
 
   // Funkcja do przesłania zdjęcia do Firebase Storage
@@ -48,6 +70,13 @@ class FirestoreDatabase {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getUserCoopStream(String userEmail) {
+    return FirebaseFirestore.instance
+        .collection('Posts')
+        .where('Uemail', isEqualTo: userEmail)
+        .snapshots();
+  }
+
   Future<void> updatePostTitle(String docID,String newTitle){
     return posts.doc(docID).update({
       'PostTitle':newTitle,
@@ -73,11 +102,30 @@ class FirestoreDatabase {
     });
   }
 
-  Future<void> changeState(String docID,String newState){
+  Future<void> changeState(String docID,String newState, String uemail){
+    return posts.doc(docID).update({
+      'PostState':newState,
+      'Uemail': uemail,
+    });
+  }
+
+  Future<void> deletEmail(String docID){
+    return posts.doc(docID).update({
+      'Uemail': "",
+    });
+  }
+
+  Future<void> updateState(String docID,String newState){
     return posts.doc(docID).update({
       'PostState':newState,
     });
   }
+
+  // Future<void> deleteState(String docID,String newState){
+  //   return posts.doc(docID).update({
+  //     'PostState':'nowy',
+  //   });
+  // }
 
   Future<void> addOffer (String name, String message,String photoUrl){
     return offers.add({

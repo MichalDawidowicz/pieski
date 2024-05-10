@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/backToMyPage.dart';
 
@@ -11,15 +12,19 @@ class MyPostPage extends StatelessWidget {
   final String postID;
   final String photoUrl;
   final String state;
+  final String vol;
+  // final String uemail;
   MyPostPage({
     super.key,
     required this.title,
     required this.message,
     required this.postID,
     required this.photoUrl,
-    required this.state
+    required this.state, required this.vol,
+    // required this.uemail
   });
   final FirestoreDatabase database = FirestoreDatabase();
+
 
   void _deletePost(BuildContext context) {
     showDialog(
@@ -51,6 +56,7 @@ class MyPostPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -78,6 +84,7 @@ class MyPostPage extends StatelessWidget {
                           oldTitle: title,
                           oldUrl: photoUrl,
                           state: state,
+                          vol: vol,
                         ),
                       ),
                     );
@@ -114,39 +121,45 @@ class MyPostPage extends StatelessWidget {
                     ),
                   SizedBox(height: 10.0),
                   if (state == 'zarezerwowane')
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    Column(
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            database.changeState(postID, 'sprzedano');
-                            Navigator.pushNamed(context, '/my_page');
-                          },
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(horizontal: 10.0)),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
+                        Text('Wolontariusz: $vol'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                database.updateState(postID, 'sprzedano');
+                                Navigator.pushNamed(context, '/my_page');
+                              },
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(horizontal: 10.0)),
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18.0),
+                                      )
                                   )
-                              )
-                          ),
-                          child: Text('Zaakceptuj współpracę', style: TextStyle(color: Colors.black)),
-                        ),
-                        SizedBox(width: 10),
-                        OutlinedButton(
-                          onPressed: () {
-                            database.changeState(postID, 'nowe');
-                            Navigator.pushNamed(context, '/my_page');
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            side: BorderSide(color: Colors.black),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
+                              ),
+                              child: Text('Zaakceptuj współpracę', style: TextStyle(color: Colors.black)),
                             ),
-                          ),
-                          child: Text('Odrzuć współpracę', style: TextStyle(color: Colors.black)),
+                            SizedBox(width: 10),
+                            OutlinedButton(
+                              onPressed: () {
+                                print(FirebaseAuth.instance.currentUser!.uid);
+                                database.updateState(postID, 'nowe');
+                                Navigator.pushNamed(context, '/my_page');
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                side: BorderSide(color: Colors.black),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                ),
+                              ),
+                              child: Text('Odrzuć współpracę', style: TextStyle(color: Colors.black)),
+                            ),
+                          ],
                         ),
                       ],
                     ),

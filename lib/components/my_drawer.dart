@@ -85,6 +85,17 @@ class MyDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 25.0),
             child: ListTile(
+              leading: Icon(Icons.people),
+              title: Text("WSPÓŁPRACE"),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/coop');
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: ListTile(
               leading: Icon(Icons.logout),
               title: Text("WYLOGUJ"),
               onTap: (){

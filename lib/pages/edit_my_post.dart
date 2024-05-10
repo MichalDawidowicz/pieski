@@ -13,13 +13,14 @@ class EditMyPostPage extends StatefulWidget {
   final String postID;
   final String oldUrl;
   final String state;
+  final String vol;
 
   EditMyPostPage({
     Key? key,
     required this.oldTitle,
     required this.oldPost,
     required this.postID,
-    required this.oldUrl, required this.state,
+    required this.oldUrl, required this.state, required this.vol,
   }) : super(key: key);
 
   @override
@@ -179,7 +180,8 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
                               message: newPost,
                               postID: widget.postID,
                               photoUrl: photoUrl,
-                              state: widget.state,// Przekazujemy zaktualizowany URL zdjęcia
+                              state: widget.state,
+                              vol: widget.vol,// Przekazujemy zaktualizowany URL zdjęcia
                             ),
                           ),
                         );
