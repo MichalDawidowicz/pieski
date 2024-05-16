@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ogloszenia/components/back_to_home.dart';
 import 'package:ogloszenia/components/my_back_button.dart';
 import 'package:ogloszenia/components/my_post_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
@@ -116,7 +118,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("DODAJ OGŁOSZENIE"),
-        leading: MyBackButton(),
+        leading: BackToHome(),
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -177,6 +179,10 @@ class _HomePageState extends State<HomePage> {
             PostButton(
               onTap: isButtonEnabled() ? postMessage : null,
             ),
+            GestureDetector(onTap: (){
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/add_offer');},
+                child: Text("Chcesz dodać ofertę? Kliknij tutaj"))
           ],
         ),
       ),

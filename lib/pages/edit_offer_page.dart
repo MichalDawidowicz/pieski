@@ -8,6 +8,8 @@ import 'package:ogloszenia/pages/offer_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 
+import '../components/my_back2_button.dart';
+
 class EditMyOfferPage extends StatefulWidget {
   final String oldTitle;
   final String oldPost;
@@ -187,7 +189,7 @@ class _EditMyOfferPageState extends State<EditMyOfferPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyBackButton(),
+                  MyBack2Button(),
                   ElevatedButton(
                     onPressed: () async {
                       await _deleteOffer(context);

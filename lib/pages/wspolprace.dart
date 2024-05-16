@@ -17,7 +17,6 @@ class Coop extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("MOJE WSPÓŁPRACE"),
-        leading: BackToHome(),
         elevation: 1,
       ),
       body: Column(
@@ -114,6 +113,48 @@ class Coop extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/coop');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/users_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list_alt),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/offers');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile_page');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

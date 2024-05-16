@@ -7,7 +7,7 @@ class MyBack3Button extends StatelessWidget {
     return GestureDetector(
       onTap: (){
         // Navigator.pop(context);
-        Navigator.pushNamed(context, '/my_page');
+        Navigator.pushNamed(context, '/profile_page');
       },
       child: Container(
         child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.inversePrimary),

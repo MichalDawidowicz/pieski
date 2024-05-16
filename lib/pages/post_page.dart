@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ogloszenia/components/back_to_home.dart';
 import 'package:ogloszenia/components/my_drawer.dart';
 
 import '../components/my_back2_button.dart';
@@ -40,7 +41,7 @@ class PostPage extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const MyBack2Button(),
+                        const BackToHome(),
                       ],
                     ),
                   ),

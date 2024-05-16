@@ -7,7 +7,7 @@ class MyBack2Button extends StatelessWidget {
     return GestureDetector(
         onTap: (){
           Navigator.pop(context);
-          Navigator.pushNamed(context, '/users_page');
+          Navigator.pushNamed(context, '/offers');
         },
       child: Container(
         child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.inversePrimary),

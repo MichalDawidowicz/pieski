@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/back_to_home.dart';
+import 'package:ogloszenia/components/my_back3_button.dart';
 import 'package:ogloszenia/pages/my_post_page.dart';
 import '../components/my_back_button.dart';
 import '../database/firestore.dart';
@@ -17,7 +18,7 @@ class MyPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           title: Text("MOJE OGŁOSZENIA"),
-          leading: BackToHome(),
+          leading: MyBack3Button(),
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           elevation: 1
       ),

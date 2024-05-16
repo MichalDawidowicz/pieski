@@ -15,18 +15,7 @@ class OffersPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("LISTA OFERT"),
-        // leading: MyBackButton(
-        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 1,
-        // actions: [
-        //   //logout
-        //   IconButton(
-        //     onPressed: logout,
-        //     icon: Icon(Icons.logout),
-        //   )
-        // ],
       ),
-      drawer: MyDrawer(),
       body: Column(
         children: [
           Expanded(
@@ -81,6 +70,48 @@ class OffersPage extends StatelessWidget {
                 },
               )),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/coop');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/users_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list_alt),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/offers');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile_page');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

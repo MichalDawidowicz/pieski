@@ -1,24 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ogloszenia/components/back_to_home.dart';
 import 'package:ogloszenia/components/my_back_button.dart';
 
 import '../database/firestore.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({super.key});
+  ProfilePage({Key? key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Aktualnie zalogowany użytkownik
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
-  bool isLoading = false; // Dodajemy zmienną do śledzenia stanu ładowania
+  bool isLoading = false;
 
-  // Przyszłość do pobrania szczegółów użytkownika
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
     return await FirebaseFirestore.instance
         .collection("Users")
@@ -26,7 +25,6 @@ class _ProfilePageState extends State<ProfilePage> {
         .get();
   }
 
-  // Metoda wyświetlająca okno dialogowe do edycji danych
   void showEditDialog(BuildContext context, String email, String? currentInfo) {
     final TextEditingController aboutMeController = TextEditingController(text: currentInfo);
 
@@ -37,16 +35,15 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Text("Opowiedz o sobie"),
           content: TextField(
             controller: aboutMeController,
-            maxLines: null, // Umożliwia zawijanie tekstu
+            maxLines: null,
             keyboardType: TextInputType.multiline,
             decoration: InputDecoration(hintText: "Wpisz coś o sobie"),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Anuluj"),
+              child: Text("Anuluj", style: TextStyle(color: Colors.black)),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.grey,
+                backgroundColor: Colors.white,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -75,6 +72,41 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void logout() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Wylogowanie"),
+          content: Text("Czy na pewno chcesz się wylogować?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Anuluj", style: TextStyle(color: Colors.grey)),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Wyloguj"),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.black,
+              ),
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/auth_page');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,35 +114,33 @@ class _ProfilePageState extends State<ProfilePage> {
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: getUserDetails(),
         builder: (context, snapshot) {
-          // Ładowanie
           if (snapshot.connectionState == ConnectionState.waiting || isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          }
-          // Błąd
-          else if (snapshot.hasError) {
+          } else if (snapshot.hasError) {
             return Text("Błąd: ${snapshot.error}");
-          }
-          // Dane
-          else if (snapshot.hasData) {
+          } else if (snapshot.hasData) {
             Map<String, dynamic>? user = snapshot.data!.data();
             return Center(
               child: Column(
                 children: [
-                  // Przycisk powrotu
-                  const Padding(
-                    padding: EdgeInsets.only(top: 50.0, left: 25),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50.0, left: 25, right: 10),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        MyBackButton(),
+                        Icon(Icons.person),
+                        IconButton(
+                          icon: Icon(Icons.logout),
+                          onPressed: logout,
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 25,
                   ),
-                  // Tekst profilowy
                   const Text(
                     "Profil",
                     style: TextStyle(
@@ -118,25 +148,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Colors.black26,
                     ),
                   ),
-                  const SizedBox(height: 25),
-                  // Adres e-mail
+                  SizedBox(height: 25),
                   Text(
                     user!['email'],
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 25),
-                  // Przycisk "Edytuj dane"
-                  ElevatedButton(
-                    onPressed: () {
-                      showEditDialog(context, user['email'], user['Info']);
-                    },
-                    child: Text(
-                      "Edytuj dane",
-                      style: TextStyle(color: Colors.black54),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  // Pole 'Info'
+                  SizedBox(height: 25),
                   if (user.containsKey('Info'))
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -150,6 +167,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                     ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/my_page');
+                    },
+                    child: Text('Moje ogłoszenia',style: TextStyle(color: Colors.black),),
+                  ),
                 ],
               ),
             );
@@ -157,6 +182,48 @@ class _ProfilePageState extends State<ProfilePage> {
             return Text("Brak danych");
           }
         },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/home_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/coop');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/users_page');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.list_alt),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/offers');
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile_page');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

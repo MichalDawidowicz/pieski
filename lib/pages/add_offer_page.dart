@@ -118,7 +118,7 @@ class _AddOfferState extends State<AddOffer> {
     return Scaffold(
       appBar: AppBar(
         title: Text("DODAJ OFERTĘ"),
-        leading: BackToHome(),
+        leading: MyBackButton(),
         elevation: 1,
       ),
       body: SingleChildScrollView(
