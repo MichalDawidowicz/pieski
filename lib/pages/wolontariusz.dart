@@ -1,78 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_back_button.dart';
-
 import '../database/firestore.dart';
 
-class ProfilePage extends StatefulWidget {
-  ProfilePage({super.key});
+class Wolontariusz extends StatefulWidget {
+  final String userEmail; // Zmieniamy typ na String
+
+  Wolontariusz({Key? key, required this.userEmail}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _WolontariuszState createState() => _WolontariuszState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  // Aktualnie zalogowany użytkownik
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-
+class _WolontariuszState extends State<Wolontariusz> {
   bool isLoading = false; // Dodajemy zmienną do śledzenia stanu ładowania
 
   // Przyszłość do pobrania szczegółów użytkownika
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
     return await FirebaseFirestore.instance
         .collection("Users")
-        .doc(currentUser!.email)
+        .doc(widget.userEmail) // Używamy widget.currentUserEmail jako adresu e-mail
         .get();
-  }
-
-  // Metoda wyświetlająca okno dialogowe do edycji danych
-  void showEditDialog(BuildContext context, String email, String? currentInfo) {
-    final TextEditingController aboutMeController = TextEditingController(text: currentInfo);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Opowiedz o sobie"),
-          content: TextField(
-            controller: aboutMeController,
-            maxLines: null, // Umożliwia zawijanie tekstu
-            keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(hintText: "Wpisz coś o sobie"),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Anuluj"),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.grey,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text("Zapisz"),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
-              ),
-              onPressed: () async {
-                setState(() {
-                  isLoading = true;
-                });
-                Navigator.of(context).pop();
-                await FirestoreDatabase().updateProfile(email, aboutMeController.text);
-                setState(() {
-                  isLoading = false;
-                });
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -123,17 +71,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   Text(
                     user!['email'],
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 25),
-                  // Przycisk "Edytuj dane"
-                  ElevatedButton(
-                    onPressed: () {
-                      showEditDialog(context, user['email'], user['Info']);
-                    },
-                    child: Text(
-                      "Edytuj dane",
-                      style: TextStyle(color: Colors.black54),
-                    ),
                   ),
                   const SizedBox(height: 25),
                   // Pole 'Info'

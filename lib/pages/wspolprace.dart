@@ -40,69 +40,75 @@ class Coop extends StatelessWidget {
                     ),
                   );
                 }
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: posts.length,
-                    itemBuilder: (context, index) {
-                      final post = posts[index];
-                      String title = post['PostTitle'];
-                      String message = post['PostMessage'];
-                      String userEmail = post['UserEmail'];
-                      String postID = post.id;
-                      String state = post['PostState'];
+                return ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    String title = post['PostTitle'];
+                    String message = post['PostMessage'];
+                    String userEmail = post['UserEmail'];
+                    String postID = post.id;
+                    String state = post['PostState'];
 
-                      String trailingText = state == 'nowe' ? 'Właściciel odrzucił twoją ofertę' : state;
+                    String trailingText = state == 'nowe' ? 'Właściciel odrzucił twoją ofertę' : state;
 
-                      return Dismissible(
-                        key: Key(postID), // unikalny klucz dla każdego elementu
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 20.0),
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.white,
+                    return Dismissible(
+                      key: Key(postID), // unikalny klucz dla każdego elementu
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 20.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (direction) async {
+                        if (state != 'nowe') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Tego wpisu nie można usunąć."),
                             ),
-                          ),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        confirmDismiss: (direction) async {
-                          return await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text("Potwierdzenie"),
-                                content: Text("Czy na pewno chcesz usunąć ten wpis?"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: Text("Anuluj"),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    child: Text("Usuń"),
-                                  ),
-                                ],
-                              );
-                            },
                           );
-                        },
-                        onDismissed: (direction) {
-                          // Usuń wpis z bazy danych
-                          database.deletEmail(postID);
-                        },
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: ListTile(
-                            title: Text(title),
-                            subtitle: Text(message + "\n" + userEmail),
-                            trailing: Text(trailingText),
-                          ),
+                          return false;
+                        }
+                        return await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Potwierdzenie"),
+                              content: Text("Czy na pewno chcesz usunąć ten wpis?"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: Text("Anuluj"),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                  child: Text("Usuń"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      onDismissed: (direction) {
+                        // Usuń wpis z bazy danych
+                        database.deletEmail(postID);
+                      },
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: ListTile(
+                          title: Text(title),
+                          subtitle: Text(message + "\n" + userEmail),
+                          trailing: Text(trailingText),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),

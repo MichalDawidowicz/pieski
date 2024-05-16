@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/backToMyPage.dart';
+import 'package:ogloszenia/pages/wolontariusz.dart';
 
 import '../components/my_back3_button.dart';
 import '../database/firestore.dart';
@@ -123,7 +125,16 @@ class MyPostPage extends StatelessWidget {
                   if (state == 'zarezerwowane')
                     Column(
                       children: [
-                        Text('Wolontariusz: $vol'),
+                        GestureDetector(onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Wolontariusz(userEmail: vol),
+                            ),
+                          );
+                        },
+                            child: Text('Wolontariusz: $vol',
+                            )),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [

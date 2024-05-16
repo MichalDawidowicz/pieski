@@ -10,6 +10,7 @@ class FirestoreDatabase {
 
   final CollectionReference posts = FirebaseFirestore.instance.collection("Posts");
   final CollectionReference offers = FirebaseFirestore.instance.collection("Offers");
+  final CollectionReference users = FirebaseFirestore.instance.collection("Users");
 
 
   Future<void> addPost (String title, String message,String photoUrl){
@@ -20,6 +21,11 @@ class FirestoreDatabase {
       'Photo' : photoUrl,
       'PostState' : 'nowe',
       'Uemail': ''
+    });
+  }
+  Future<void> updateProfile(String docID,String info){
+    return users.doc(docID).update({
+      'Info':info,
     });
   }
 
