@@ -16,8 +16,8 @@ class Coop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Icon(Icons.diversity_1),
         title: Text("MOJE WSPÓŁPRACE"),
-        elevation: 1,
       ),
       body: Column(
         children: [
@@ -125,13 +125,7 @@ class Coop extends StatelessWidget {
                 Navigator.pushNamed(context, '/home_page');
               },
             ),
-            IconButton(
-              icon: Icon(Icons.diversity_1),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/coop');
-              },
-            ),
+            Icon(Icons.diversity_1,color: Colors.blue,),
             IconButton(
               icon: Icon(Icons.list),
               onPressed: () {

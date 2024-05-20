@@ -215,13 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.pushNamed(context, '/offers');
               },
             ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/profile_page');
-              },
-            ),
+            Icon(Icons.settings,color: Colors.blue,),
           ],
         ),
       ),

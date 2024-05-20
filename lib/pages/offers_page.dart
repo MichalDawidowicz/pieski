@@ -14,8 +14,10 @@ class OffersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Icon(Icons.list_alt),
         title: Text("LISTA OFERT"),
       ),
+
       body: Column(
         children: [
           Expanded(
@@ -96,13 +98,7 @@ class OffersPage extends StatelessWidget {
                 Navigator.pushNamed(context, '/users_page');
               },
             ),
-            IconButton(
-              icon: Icon(Icons.list_alt),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/offers');
-              },
-            ),
+            Icon(Icons.list_alt,color: Colors.blue,),
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {

@@ -14,7 +14,6 @@ class UsersPage extends StatelessWidget {
       appBar: AppBar(
         leading: Icon(Icons.list),
         title: Text("LISTA OGŁOSZEŃ"),
-
       ),
       body: Column(
         children: [
@@ -89,13 +88,7 @@ class UsersPage extends StatelessWidget {
                 Navigator.pushNamed(context, '/coop');
               },
             ),
-            IconButton(
-              icon: Icon(Icons.list),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/users_page');
-              },
-            ),
+            Icon(Icons.list,color: Colors.blue,),
             IconButton(
               icon: Icon(Icons.list_alt),
               onPressed: () {
