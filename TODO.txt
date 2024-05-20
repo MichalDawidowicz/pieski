@@ -1,2 +1,1 @@
-Ekran edycji - edytowanie wszystkich danych w ogłoszeniu
-
+--
