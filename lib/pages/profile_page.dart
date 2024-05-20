@@ -195,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.diversity_1),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/coop');

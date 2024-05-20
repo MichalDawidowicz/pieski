@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ogloszenia/components/back_to_home.dart';
-import 'package:ogloszenia/components/my_back_button.dart';
-import '../database/firestore.dart';
+import 'package:ogloszenia/components/backToMyPage.dart';
 
 class Wolontariusz extends StatefulWidget {
   final String userEmail; // Zmieniamy typ na String
@@ -52,7 +50,7 @@ class _WolontariuszState extends State<Wolontariusz> {
                     padding: EdgeInsets.only(top: 50.0, left: 25),
                     child: Row(
                       children: [
-                        BackToHome(),
+                        BackToMyPage(),
                       ],
                     ),
                   ),

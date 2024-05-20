@@ -126,7 +126,7 @@ class Coop extends StatelessWidget {
               },
             ),
             IconButton(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.diversity_1),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/coop');
