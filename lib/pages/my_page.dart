@@ -17,7 +17,7 @@ class MyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("MOJE OGŁOSZENIA"),
+          title: Text("moje ogłoszenia"),
           leading: MyBack3Button(),
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           elevation: 1

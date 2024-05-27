@@ -47,7 +47,7 @@ class PostPage extends StatelessWidget {
                   ),
                   SizedBox(height: 10.0),
                   Text(
-                    "OGŁOSZENIE",
+                    "ogłoszenie",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),

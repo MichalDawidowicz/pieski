@@ -117,7 +117,7 @@ class _AddOfferState extends State<AddOffer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DODAJ OFERTĘ"),
+        title: Text("dodaj ofertę"),
         leading: MyBackButton(),
         elevation: 1,
       ),
@@ -127,7 +127,7 @@ class _AddOfferState extends State<AddOffer> {
             Padding(
               padding: const EdgeInsets.all(25),
               child: MyTextField(
-                hintText: "IMIĘ",
+                hintText: "Imię",
                 obscureText: false,
                 controller: titleController,
               ),
@@ -135,7 +135,7 @@ class _AddOfferState extends State<AddOffer> {
             Padding(
               padding: const EdgeInsets.all(25),
               child: MyTextField(
-                hintText: "OPIS",
+                hintText: "Opis",
                 obscureText: false,
                 controller: postController,
               ),

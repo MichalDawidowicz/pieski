@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DODAJ OGŁOSZENIE"),
+        title: Text("dodaj ogłoszenie"),
         leading: BackToHome(),
         elevation: 1,
       ),

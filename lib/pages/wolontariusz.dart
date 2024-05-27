@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/backToMyPage.dart';
+import 'package:ogloszenia/pages/opinie.dart';
 
 class Wolontariusz extends StatefulWidget {
   final String userEmail; // Zmieniamy typ na String
@@ -18,7 +20,8 @@ class _WolontariuszState extends State<Wolontariusz> {
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
     return await FirebaseFirestore.instance
         .collection("Users")
-        .doc(widget.userEmail) // Używamy widget.currentUserEmail jako adresu e-mail
+        .doc(widget
+            .userEmail) // Używamy widget.currentUserEmail jako adresu e-mail
         .get();
   }
 
@@ -30,7 +33,8 @@ class _WolontariuszState extends State<Wolontariusz> {
         future: getUserDetails(),
         builder: (context, snapshot) {
           // Ładowanie
-          if (snapshot.connectionState == ConnectionState.waiting || isLoading) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -86,11 +90,24 @@ class _WolontariuszState extends State<Wolontariusz> {
                         style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                     ),
+                  const SizedBox(height: 25),
+                  GestureDetector(
+                    child: Text('Opinie'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              OpiniePage(userEmail: widget.userEmail),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             );
           } else {
-            return Text("Brak danych");
+            return Text("Brak opisu");
           }
         },
       ),

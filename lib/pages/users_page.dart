@@ -13,7 +13,7 @@ class UsersPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.list),
-        title: Text("LISTA OGŁOSZEŃ"),
+        title: Text("lista ogłoszeń"),
       ),
       body: Column(
         children: [
@@ -77,14 +77,12 @@ class UsersPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/home_page');
               },
             ),
             IconButton(
               icon: Icon(Icons.diversity_1),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/coop');
               },
             ),
@@ -92,14 +90,12 @@ class UsersPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.list_alt),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/offers');
               },
             ),
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile_page');
               },
             ),

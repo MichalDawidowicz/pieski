@@ -42,7 +42,7 @@ class OfferPage extends StatelessWidget {
             ),
             SizedBox(height: 10.0),
             Text(
-              "OFERTA",
+              "oferta",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),

@@ -15,7 +15,7 @@ class OffersPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.list_alt),
-        title: Text("LISTA OFERT"),
+        title: Text("lista ofert"),
       ),
 
       body: Column(
@@ -80,21 +80,18 @@ class OffersPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/home_page');
               },
             ),
             IconButton(
               icon: Icon(Icons.diversity_1),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/coop');
               },
             ),
             IconButton(
               icon: Icon(Icons.list),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/users_page');
               },
             ),
@@ -102,7 +99,6 @@ class OffersPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile_page');
               },
             ),

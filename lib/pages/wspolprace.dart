@@ -17,7 +17,7 @@ class Coop extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.diversity_1),
-        title: Text("MOJE WSPÓŁPRACE"),
+        title: Text("moje współprace"),
       ),
       body: Column(
         children: [
@@ -83,11 +83,11 @@ class Coop extends StatelessWidget {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => Navigator.of(context).pop(false),
-                                  child: Text("Anuluj"),
+                                  child: Text("Anuluj",style: TextStyle(color: Colors.black),),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.of(context).pop(true),
-                                  child: Text("Usuń"),
+                                  child: Text("Usuń",style: TextStyle(color: Colors.red)),
                                 ),
                               ],
                             );
@@ -121,7 +121,6 @@ class Coop extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/home_page');
               },
             ),
@@ -129,21 +128,18 @@ class Coop extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.list),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/users_page');
               },
             ),
             IconButton(
               icon: Icon(Icons.list_alt),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/offers');
               },
             ),
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile_page');
               },
             ),

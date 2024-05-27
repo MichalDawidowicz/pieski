@@ -23,6 +23,17 @@ class FirestoreDatabase {
       'Uemail': ''
     });
   }
+
+
+  Future<void> addOpinion(String userEmail, int rating, String comment) async {
+    await users.doc(userEmail).collection('opinie').add({
+      'rating': rating,
+      'comment': comment,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+
   Future<void> updateProfile(String docID,String info){
     return users.doc(docID).update({
       'Info':info,
