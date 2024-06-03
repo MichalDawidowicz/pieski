@@ -41,13 +41,14 @@ class UsersPage extends StatelessWidget {
                     final post = posts[index];
                     String title = post['PostTitle'];
                     String message = post['PostMessage'];
-                    String userEmail = post['UserEmail'];
+                    String userEmail = post['UserEmail']; // Dodaj pobieranie adresu URL zdjęcia
 
                     return GestureDetector(
                       child: ListTile(
                         title: Text(title),
                         subtitle: Text(message + "\n" + userEmail),
                         onTap: () {
+                          // Przekazanie adresu URL zdjęcia do PostPage
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -55,7 +56,7 @@ class UsersPage extends StatelessWidget {
                                 title: title,
                                 message: message,
                                 userEmail: userEmail,
-                                photoUrl: post['Photo'],
+                                // Przekazanie adresu URL zdjęcia
                                 id: post.id,
                               ),
                             ),

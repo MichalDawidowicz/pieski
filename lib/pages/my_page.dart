@@ -66,11 +66,6 @@ class MyPage extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => MyPostPage(
                                   postID: postID,
-                                  title: title,
-                                  message: message,
-                                  photoUrl: post['Photo'],
-                                  state: state,
-                                  vol: vol,
                                 ),
                               ),
                             );

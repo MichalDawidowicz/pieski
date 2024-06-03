@@ -11,9 +11,13 @@ class PostPage extends StatelessWidget {
   final String title;
   final String message;
   final String userEmail;
-  final String photoUrl;
   final String id;
-  const PostPage({Key? key, required this.title, required this.message, required this.userEmail, required this.photoUrl, required this.id});
+  const PostPage(
+      {Key? key,
+      required this.title,
+      required this.message,
+      required this.userEmail,
+      required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +30,19 @@ class PostPage extends StatelessWidget {
           future: database.getPostState(id),
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Możesz zmienić na dowolny widżet w trakcie oczekiwania
+              return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              String postState = snapshot.data ?? ""; // Pobierz stan wpisu
+              String postState = snapshot.data ?? "";
               bool isPostReserved = postState == "zarezerwowane";
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+                    padding: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -59,7 +64,8 @@ class PostPage extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 10.0),
                         Text(
@@ -72,26 +78,66 @@ class PostPage extends StatelessWidget {
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 10.0),
-                        // Wyświetlanie zdjęcia
-                        if (photoUrl.isNotEmpty)
-                          Image.network(
-                            photoUrl,
-                            width: MediaQuery.of(context).size.width, // Ustaw szerokość zdjęcia na pełną szerokość ekranu
-                            height: 200.0, // Ustaw wysokość zdjęcia na 200 pikseli (możesz dostosować do własnych preferencji)
-                            fit: BoxFit.cover, // Dopasuj zdjęcie do obszaru wyświetlania
-                          ),
+// Galeria zdjęć z kolekcji 'Photos'
+                        FutureBuilder<List<String>>(
+                          future: database.getPhotosForPost(id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              // Dodaj warunek sprawdzający czy snapshot zawiera dane
+                              List<String>? photoUrls = snapshot.data;
+                              if (photoUrls != null && photoUrls.isNotEmpty) {
+                                return SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: photoUrls.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Image.network(
+                                          photoUrls[index],
+                                          width: 150,
+                                          height: 200,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              } else {
+                                return SizedBox
+                                    .shrink(); // Brak zdjęć, zwróć pusty widżet
+                              }
+                            } else {
+                              return Text(
+                                  'Brak danych zdjęć'); // Dodaj komunikat informujący o braku danych
+                            }
+                          },
+                        ),
+
                         SizedBox(height: 10.0),
                         // Dodaj warunek wyświetlania przycisku "Edytuj ofertę"
                         if (isPostReserved)
                           Text(
                             "Zarezerwowane",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red),
                           ),
-                        if (!isPostReserved && loggedInUserEmail != null && loggedInUserEmail != userEmail)
+                        if (!isPostReserved &&
+                            loggedInUserEmail != null &&
+                            loggedInUserEmail != userEmail)
                           GestureDetector(
                             child: Text("Zgłoś chęć"),
                             onTap: () {
-                              database.changeState(id, "zarezerwowane", loggedInUserEmail);
+                              database.changeState(
+                                  id, "zarezerwowane", loggedInUserEmail);
                               Navigator.pushNamed(context, '/users_page');
                             },
                           ),

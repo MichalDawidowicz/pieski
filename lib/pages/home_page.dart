@@ -17,67 +17,21 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+class Post {
+  String title;
+  String post;
+  List<String> photoUrls;
+
+  Post({required this.title, required this.post, this.photoUrls = const []});
+}
+
 class _HomePageState extends State<HomePage> {
   final FirestoreDatabase database = FirestoreDatabase();
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController postController = TextEditingController();
-  File? _image;
-
-  bool isButtonEnabled() {
-    // Sprawdź, czy tytuł, opis i zdjęcie zostały dodane
-    return titleController.text.isNotEmpty &&
-        postController.text.isNotEmpty &&
-        _image != null;
-  }
-
-  void postMessage() async {
-    //post only if title, message, and photoUrl is not empty
-    if (titleController.text.isNotEmpty &&
-        postController.text.isNotEmpty &&
-        _image != null) {
-      String title = titleController.text;
-      String post = postController.text;
-      String photoUrl = "";
-
-      // Zmniejsz rozmiar zdjęcia przed przesłaniem do Firebase Storage
-      File compressedImage = await compressImage(_image!);
-      // Prześlij zmniejszone zdjęcie do Firebase Storage i uzyskaj jego URL
-      photoUrl =
-      await database.uploadImageToFirebaseStorage(compressedImage);
-
-      database.addPost(title, post, photoUrl);
-
-      // Pokaż SnackBar po zapisaniu wpisu
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Dodano wpis'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // Wyczyść pola tekstowe i ustawienia po dodaniu wpisu
-      titleController.clear();
-      postController.clear();
-      setState(() {
-        _image = null;
-      });
-
-      // Przejdź na stronę UsersPage po poprawnym dodaniu postu
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => UsersPage()),
-      );
-    } else {
-      // Pokaż komunikat o błędzie, jeśli tytuł, opis lub zdjęcie jest puste
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Tytuł, treść i zdjęcie są wymagane'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
+  List<File> _images = [];
+  bool _isPosting = false; // Dodajemy zmienną _isPosting
 
   // Funkcja do zmniejszenia rozmiaru zdjęcia
   Future<File> compressImage(File imageFile) async {
@@ -89,18 +43,78 @@ class _HomePageState extends State<HomePage> {
     // Zapisz zmniejszone zdjęcie do pliku tymczasowego
     final tempDir = await Directory.systemTemp;
     final compressedImageFile = File('${tempDir.path}/compressed_image.jpg')
-      ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 50)); // 85 to wartość jakości
+      ..writeAsBytesSync(
+          img.encodeJpg(resizedImage, quality: 50)); // 85 to wartość jakości
 
     return compressedImageFile;
   }
 
-  // Funkcja do pobrania zdjęcia z galerii lub z aparatu
-  Future getImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
+  bool isButtonEnabled() {
+    // Sprawdź, czy tytuł, opis i przynajmniej jedno zdjęcie zostało dodane
+    return titleController.text.isNotEmpty &&
+        postController.text.isNotEmpty &&
+        _images.isNotEmpty;
+  }
 
-    setState(() {
+  Future<void> postMessage() async {
+    if (isButtonEnabled()) {
+      setState(() {
+        _isPosting = true; // Ustawiamy _isPosting na true podczas dodawania wpisu
+      });
+
+      String title = titleController.text;
+      String post = postController.text;
+      List<String> photoUrls = [];
+
+      // Prześlij każde zdjęcie do Firebase Storage i uzyskaj jego URL
+      for (File image in _images) {
+        File compressedImage = await compressImage(image);
+        String photoUrl = await database.uploadImageToFirebaseStorage(
+            compressedImage);
+        photoUrls.add(photoUrl);
+      }
+
+      // Dodaj post z listą URL-i zdjęć
+      await database.addPostWithPhotos(
+          Post(title: title, post: post, photoUrls: photoUrls));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Dodano wpis'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      titleController.clear();
+      postController.clear();
+      setState(() {
+        _images.clear();
+        _isPosting = false; // Po dodaniu wpisu, ustawiamy _isPosting z powrotem na false
+      });
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => UsersPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Tytuł, treść i co najmniej jedno zdjęcie są wymagane'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  // Funkcja do pobrania zdjęcia z galerii lub z aparatu
+  Future<void> pickImage(ImageSource source) async {
+    if (_images.length < 3) {
+      final pickedFile = await ImagePicker().pickImage(source: source);
+
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        setState(() {
+          _images.add(File(pickedFile.path));
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -108,82 +122,161 @@ class _HomePageState extends State<HomePage> {
             duration: Duration(seconds: 2),
           ),
         );
-        // print('No image selected.');
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Możesz dodać maksymalnie 3 zdjęcia'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  // Funkcja do usuwania zdjęcia
+  void removeImage(int index) {
+    setState(() {
+      _images.removeAt(index);
     });
   }
 
+  // Funkcja do zmiany zdjęcia
+  Future<void> changeImage(int index) async {
+    final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _images[index] = File(pickedFile.path);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("dodaj ogłoszenie"),
-        leading: BackToHome(),
-        elevation: 1,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(25),
-              child: MyTextField(
-                hintText: "Tytuł",
-                obscureText: false,
-                controller: titleController,
+    return GestureDetector(
+      onTap: () {
+        // Wyłącz klawiaturę po dotknięciu ekranu poza obszarem klawiatury
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Dodaj ogłoszenie"),
+          leading: BackToHome(),
+          elevation: 1,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(25),
+                child: MyTextField(
+                  hintText: "Tytuł",
+                  obscureText: false,
+                  controller: titleController,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(25),
-              child: MyTextField(
-                hintText: "Treść",
-                obscureText: false,
-                controller: postController,
+              Padding(
+                padding: const EdgeInsets.all(25),
+                child: MyTextField(
+                  hintText: "Treść",
+                  obscureText: false,
+                  controller: postController,
+                ),
               ),
-            ),
-            _image != null
-                ? Image.file(_image!)
-                : IconButton(
-              icon: Icon(Icons.camera),
-              onPressed: () {
-                // Po kliknięciu ikony aparatu, użytkownik może wybrać źródło zdjęcia
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return SafeArea(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.photo_library),
-                            title: Text('Wybierz z galerii'),
-                            onTap: () {
-                              getImage(ImageSource.gallery);
-                              Navigator.pop(context);
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _images.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Pokaż listę opcji dla klikniętego zdjęcia
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SafeArea(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: Icon(Icons.delete),
+                                      title: Text('Usuń zdjęcie'),
+                                      onTap: () {
+                                        removeImage(index);
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: Icon(Icons.camera_alt),
+                                      title: Text('Wykonaj zdjęcie ponownie'),
+                                      onTap: () {
+                                        changeImage(index);
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.photo_camera),
-                            title: Text('Zrób zdjęcie'),
-                            onTap: () {
-                              getImage(ImageSource.camera);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
+                          );
+                        },
+                        child: SizedBox(
+                          width: 150,
+                          child: Image.file(_images[index]),
+                        ),
                       ),
                     );
                   },
-                );
-              },
-            ),
-            PostButton(
-              onTap: isButtonEnabled() ? postMessage : null,
-            ),
-            GestureDetector(onTap: (){
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/add_offer');},
-                child: Text("Chcesz dodać ofertę? Kliknij tutaj"))
-          ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.camera),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.photo_library),
+                              title: Text('Wybierz z galerii'),
+                              onTap: () {
+                                pickImage(ImageSource.gallery);
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.photo_camera),
+                              title: Text('Zrób zdjęcie'),
+                              onTap: () {
+                                pickImage(ImageSource.camera);
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              MyPostButton(
+                onTap: _isPosting ? null : postMessage, // Dodaj logikę do przycisku
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/add_offer');
+                },
+                child: Text("Chcesz dodać ofertę? Kliknij tutaj"),
+              )
+            ],
+          ),
         ),
       ),
     );

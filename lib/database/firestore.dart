@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
 
+import '../pages/home_page.dart';
+import '../pages/my_post_page.dart';
+
 class FirestoreDatabase {
   User? user = FirebaseAuth.instance.currentUser;
 
@@ -12,6 +15,104 @@ class FirestoreDatabase {
   final CollectionReference offers = FirebaseFirestore.instance.collection("Offers");
   final CollectionReference users = FirebaseFirestore.instance.collection("Users");
 
+  Future<void> addPostWithPhotos(Post post) async {
+    try {
+      // Dodaj post do kolekcji "Posts"
+      DocumentReference postRef = await posts.add({
+        'UserEmail': user!.email,
+        'PostTitle': post.title,
+        'PostMessage': post.post,
+        'PostState': 'nowe',
+        'Uemail': '',
+      });
+
+      // Dodaj zdjęcia do kolekcji "Photos" w bazie danych dla tego posta
+      for (String photoUrl in post.photoUrls) {
+        await postRef.collection('Photos').add({
+          'PhotoUrl': photoUrl,
+        });
+      }
+    } catch (e) {
+      print("Error while adding post with photos: $e");
+      throw e;
+    }
+  }
+
+  Future<void> addPhotosToPost(String postID, List<File> newImages) async {
+    try {
+      // Pobierz referencję do istniejącego postu
+      DocumentReference postRef = posts.doc(postID);
+
+      // Dodaj nowe zdjęcia do kolekcji "Photos" w bazie danych dla tego postu
+      for (File image in newImages) {
+        String photoUrl = await uploadImageToFirebaseStorage(image);
+        await postRef.collection('Photos').add({
+          'PhotoUrl': photoUrl,
+        });
+      }
+    } catch (e) {
+      print("Error while adding additional photos to post: $e");
+      throw e;
+    }
+  }
+
+  Future<PostData?> getPostData(String postID) async {
+    try {
+      DocumentSnapshot postSnapshot = await FirebaseFirestore.instance
+          .collection('Posts')
+          .doc(postID)
+          .get();
+
+      if (postSnapshot.exists) {
+        Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
+
+        // Pobranie danych z głównego dokumentu postu
+        String title = postData['PostTitle'];
+        String message = postData['PostMessage'];
+        String state = postData['PostState'];
+        String vol = postData['Uemail'];
+
+        // Pobranie zdjęć z podkolekcji photos
+        QuerySnapshot photosSnapshot = await FirebaseFirestore.instance
+            .collection('Posts')
+            .doc(postID)
+            .collection('Photos')
+            .get();
+
+        List<String> photoUrls = photosSnapshot.docs.map((doc) => doc['PhotoUrl'] as String).toList();
+
+        return PostData(
+          title: title,
+          message: message,
+          photoUrls: photoUrls,
+          state: state,
+          vol: vol,
+        );
+      } else {
+        // Jeśli dokument nie istnieje, zwracamy null
+        return null;
+      }
+    } catch (error) {
+      // Obsługa błędów
+      print('Error fetching post data: $error');
+      return null;
+    }
+  }
+
+  Future<void> updatePhotoUrl(String postID, String photoID, String newUrl) async {
+    try {
+      // Pobierz referencję do istniejącego URL-a zdjęcia
+      DocumentReference photoRef = posts.doc(postID).collection('Photos').doc(photoID);
+
+      // Zaktualizuj URL zdjęcia w bazie danych
+      await photoRef.update({
+        'PhotoUrl': newUrl,
+      });
+    } catch (e) {
+      print("Error while updating photo URL: $e");
+      throw e;
+    }
+  }
 
   Future<void> addPost (String title, String message,String photoUrl){
     return posts.add({
@@ -38,6 +139,43 @@ class FirestoreDatabase {
     return users.doc(docID).update({
       'Info':info,
     });
+  }
+
+  Future<List<String>> getPhotosForPost(String postId) async {
+    try {
+      // Pobierz referencję do kolekcji 'Photos' dla danego wpisu
+      CollectionReference photosRef = FirebaseFirestore.instance.collection('Posts').doc(postId).collection('Photos');
+
+      // Pobierz dokumenty (zdjęcia) z podkolekcji
+      QuerySnapshot snapshot = await photosRef.get();
+
+      // Mapuj snapshot na listę URL-i zdjęć
+      List<String> photoUrls = [];
+
+      // Iteruj przez dokumenty w snapshot
+      snapshot.docs.forEach((doc) {
+        // Upewnij się, że dokument istnieje i zawiera pole 'PhotoUrl'
+        if (doc.exists && doc.data() != null) {
+          // Pobierz dane dokumentu
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          // Sprawdź, czy dokument zawiera pole 'PhotoUrl' i czy nie jest puste
+          if (data.containsKey('PhotoUrl') && data['PhotoUrl'] != null) {
+            // Pobierz URL zdjęcia z pola 'PhotoUrl'
+            String? url = data['PhotoUrl'];
+            if (url != null && url.isNotEmpty) {
+              photoUrls.add(url);
+            }
+          }
+        }
+      });
+
+      return photoUrls;
+    } catch (e) {
+      // Obsłuż błąd, np. logując go lub zwracając pustą listę
+      print('Error fetching photos: $e');
+      return [];
+    }
   }
 
 
@@ -99,6 +237,14 @@ class FirestoreDatabase {
       'PostTitle':newTitle,
     });
   }
+
+  Future<void> editPost(String docID,String newTitle, String newPost){
+    return posts.doc(docID).update({
+      'PostMessage':newPost,
+      'PostTitle':newTitle,
+    });
+  }
+
   Future<void> updateUrl(String docID,String newUrl){
     return posts.doc(docID).update({
       'Photo':newUrl,
@@ -113,7 +259,7 @@ class FirestoreDatabase {
       'Photo':newUrl
     });
   }
-  Future<void> updatePost(String docID,String newPost){
+  Future<void> updatePostMessage(String docID,String newPost){
     return posts.doc(docID).update({
       'PostMessage':newPost,
     });

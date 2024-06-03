@@ -176,7 +176,7 @@ class _AddOfferState extends State<AddOffer> {
                 );
               },
             ),
-            PostButton(
+            MyPostButton(
               onTap: isButtonEnabled() ? postMessage : null,
             ),
           ],

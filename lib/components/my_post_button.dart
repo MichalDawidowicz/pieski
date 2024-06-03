@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class PostButton extends StatelessWidget {
+class MyPostButton extends StatelessWidget {
   final void Function()? onTap;
-  const PostButton({super.key, this.onTap});
+  const MyPostButton({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {

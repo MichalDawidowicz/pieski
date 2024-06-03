@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../database/firestore.dart';
+import 'opinie.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key});
@@ -189,6 +190,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.pushNamed(context, '/my_page');
                         },
                         child: Text('Moje ogłoszenia', style: TextStyle(color: Colors.black)),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  OpiniePage(userEmail: user['email']),
+                            ),
+                          );
+                        },
+                        child: Text('Opinie', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),
