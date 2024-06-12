@@ -14,6 +14,7 @@ class FirestoreDatabase {
   final CollectionReference posts = FirebaseFirestore.instance.collection("Posts");
   final CollectionReference offers = FirebaseFirestore.instance.collection("Offers");
   final CollectionReference users = FirebaseFirestore.instance.collection("Users");
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<void> addPostWithPhotos(Post post) async {
     try {
@@ -53,6 +54,37 @@ class FirestoreDatabase {
     } catch (e) {
       print("Error while adding additional photos to post: $e");
       throw e;
+    }
+  }
+
+  Future<void> deletePhotoFromPost(String postID, String photoUrl) async {
+    try {
+      // Pobierz odniesienie do kolekcji Photos w danym poście
+      CollectionReference photosCollection = posts.doc(postID).collection('Photos');
+
+      // Znajdź dokument z adresem URL zdjęcia
+      QuerySnapshot querySnapshot = await photosCollection.where('PhotoUrl', isEqualTo: photoUrl).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Usuń dokument
+        await photosCollection.doc(querySnapshot.docs.first.id).delete();
+
+        // Opcjonalnie: Usuń zdjęcie z Firebase Storage, jeśli przechowujesz zdjęcia także tam
+        await _deletePhotoFromStorage(photoUrl);
+      }
+    } catch (e) {
+      print('Error while deleting photo from post: $e');
+    }
+  }
+
+  // Opcjonalna metoda do usunięcia zdjęcia z Firebase Storage
+  Future<void> _deletePhotoFromStorage(String photoUrl) async {
+    try {
+      // Pobierz odniesienie do pliku w Firebase Storage
+      Reference photoRef = _storage.refFromURL(photoUrl);
+      await photoRef.delete();
+    } catch (e) {
+      print('Error while deleting photo from storage: $e');
     }
   }
 

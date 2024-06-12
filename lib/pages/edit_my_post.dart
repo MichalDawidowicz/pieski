@@ -1,6 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 import '../database/firestore.dart';
 import 'my_post_page.dart';
 
@@ -19,6 +20,7 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
   final FirestoreDatabase database = FirestoreDatabase();
   final FocusNode _focusNode = FocusNode();
   List<String> _photoUrls = [];
+  List<File> _newPhotos = []; // Lista nowych zdjęć do dodania
 
   @override
   void initState() {
@@ -87,27 +89,162 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _photoUrls.length,
+        itemCount: _photoUrls.length + 1,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FullScreenImagePage(
-                      imageUrl: _photoUrls[index],
-                    ),
+          if (index < _photoUrls.length) {
+            return Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenImagePage(
+                            imageUrl: _photoUrls[index],
+                            postID: widget.postID,
+                            photoID: index.toString(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.network(_photoUrls[index]),
                   ),
-                );
-              },
-              child: Image.network(_photoUrls[index]),
-            ),
-          );
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.red),
+                    onPressed: () {
+                      _confirmDeletePhoto(context, index);
+                    },
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return GestureDetector(
+              onTap: _showAddPhotoOptions,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  color: Colors.grey[300],
+                  width: 100,
+                  height: 100,
+                  child: Icon(Icons.add_a_photo, size: 50, color: Colors.grey[700]),
+                ),
+              ),
+            );
+          }
         },
       ),
     );
+  }
+
+  void _confirmDeletePhoto(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Usuń zdjęcie'),
+        content: Text('Czy na pewno chcesz usunąć to zdjęcie?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Anuluj'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deletePhoto(index);
+            },
+            child: Text('Usuń'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deletePhoto(int index) async {
+    await database.deletePhotoFromPost(widget.postID, _photoUrls[index]);
+    setState(() {
+      _photoUrls.removeAt(index);
+    });
+  }
+
+  void _showAddPhotoOptions() {
+    if (_photoUrls.length >= 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Można dodać maksymalnie 3 zdjęcia.'),
+        ),
+      );
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text('Wybierz z galerii'),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImage();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.camera_alt),
+            title: Text('Zrób zdjęcie'),
+            onTap: () {
+              Navigator.pop(context);
+              _takePhoto();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      _addPhoto(File(pickedFile.path));
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      _addPhoto(File(pickedFile.path));
+    }
+  }
+
+  Future<void> _addPhoto(File file) async {
+    final img.Image? image = img.decodeImage(file.readAsBytesSync());
+
+    if (image != null) {
+      // Zmniejsz rozmiar zdjęcia
+      final img.Image resized = img.copyResize(image, width: 200, height: 200);
+
+      // Zapisz zmniejszone zdjęcie do pliku tymczasowego
+      final String tempPath = '${file.parent.path}/resized_${file.uri.pathSegments.last}';
+      File(tempPath).writeAsBytesSync(img.encodeJpg(resized));
+
+      // Prześlij zmniejszone zdjęcie do Firebase Storage
+      String newUrl = await database.uploadImageToFirebaseStorage(File(tempPath));
+
+      setState(() {
+        _photoUrls.add(newUrl);
+        _newPhotos.add(File(tempPath));
+      });
+    } else {
+      throw Exception('Nie można przetworzyć obrazu');
+    }
   }
 
   void _editPost() {
@@ -115,22 +252,41 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
     String newMessage = _messageController.text.trim();
 
     database.editPost(widget.postID, newTitle, newMessage).then((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyPostPage(
-            postID: widget.postID,
+      if (_newPhotos.isNotEmpty) {
+        database.addPhotosToPost(widget.postID, _newPhotos).then((_) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyPostPage(
+                postID: widget.postID,
+              ),
+            ),
+          );
+        });
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyPostPage(
+              postID: widget.postID,
+            ),
           ),
-        ),
-      );
+        );
+      }
     });
   }
 }
 
 class FullScreenImagePage extends StatelessWidget {
   final String imageUrl;
+  final String postID;
+  final String photoID;
 
-  FullScreenImagePage({required this.imageUrl});
+  FullScreenImagePage({
+    required this.imageUrl,
+    required this.postID,
+    required this.photoID,
+  });
 
   @override
   Widget build(BuildContext context) {
