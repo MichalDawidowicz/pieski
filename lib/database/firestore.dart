@@ -158,6 +158,7 @@ class FirestoreDatabase {
   }
 
 
+
   Future<void> addOpinion(String userEmail, int rating, String comment) async {
     await users.doc(userEmail).collection('opinie').add({
       'rating': rating,
@@ -245,6 +246,21 @@ class FirestoreDatabase {
   Stream<QuerySnapshot> getPostStream(){
     final postsStream = FirebaseFirestore.instance.collection('Posts').snapshots();
     return postsStream;
+  }
+
+  Stream<QuerySnapshot<DocumentSnapshot>> getPostStreamTyped() {
+    return FirebaseFirestore.instance.collection('Posts').snapshots().map((QuerySnapshot snapshot) {
+      return snapshot as QuerySnapshot<DocumentSnapshot>;
+    });
+  }
+
+
+  Stream<QuerySnapshot> getPostSearchStream(String searchQuery) {
+    return FirebaseFirestore.instance
+        .collection('Posts')
+        .where('PostTitle', isGreaterThanOrEqualTo: searchQuery)
+        .where('PostTitle', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+        .snapshots();
   }
   Stream<QuerySnapshot> getOfferStream(){
     final postsStream = FirebaseFirestore.instance.collection('Offers').snapshots();

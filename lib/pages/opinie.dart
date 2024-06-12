@@ -41,7 +41,7 @@ class OpinieList extends StatelessWidget {
 
         // Obliczenie średniej oceny
         double averageRating = 0;
-        int totalRatings = 0;
+        double totalRatings = 0;
         for (DocumentSnapshot document in snapshot.data!.docs) {
           Map<String, dynamic> data = document.data() as Map<String, dynamic>;
           int rating = data['rating'];

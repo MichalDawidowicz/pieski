@@ -281,7 +281,7 @@ class _MyPostPageState extends State<MyPostPage> {
                 TextField(
                   controller: starsController,
                   decoration:
-                  InputDecoration(labelText: 'Liczba gwiazdek (0-5)'),
+                  InputDecoration(labelText: 'Liczba gwiazdek (1-5)'),
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 10),
@@ -300,8 +300,8 @@ class _MyPostPageState extends State<MyPostPage> {
                 int stars = int.tryParse(starsController.text) ?? 0;
                 String description = descriptionController.text.trim();
 
-                // Sprawdzanie, czy liczba gwiazdek mieści się w zakresie 0-5
-                if (stars >= 0 && stars <= 5) {
+                // Sprawdzanie, czy liczba gwiazdek mieści się w zakresie 1-5
+                if (stars >= 1 && stars <= 5) {
                   // Pobranie danych z bazy danych na podstawie postID
                   database.getPostData(widget.postID).then((postData) {
                     if (postData != null) {
@@ -323,7 +323,7 @@ class _MyPostPageState extends State<MyPostPage> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:
-                    Text('Liczba gwiazdek musi być w zakresie od 0 do 5.'),
+                    Text('Liczba gwiazdek musi być w zakresie od 1 do 5.'),
                   ));
                 }
               },
@@ -340,6 +340,7 @@ class _MyPostPageState extends State<MyPostPage> {
       },
     );
   }
+
 
 }
 
