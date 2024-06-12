@@ -21,6 +21,7 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
   final FocusNode _focusNode = FocusNode();
   List<String> _photoUrls = [];
   List<File> _newPhotos = []; // Lista nowych zdjęć do dodania
+  List<String> _photosToDelete = []; // Lista zdjęć do usunięcia
 
   @override
   void initState() {
@@ -157,7 +158,7 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _deletePhoto(index);
+              _markPhotoForDeletion(index);
             },
             child: Text('Usuń'),
           ),
@@ -166,9 +167,9 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
     );
   }
 
-  void _deletePhoto(int index) async {
-    await database.deletePhotoFromPost(widget.postID, _photoUrls[index]);
+  void _markPhotoForDeletion(int index) {
     setState(() {
+      _photosToDelete.add(_photoUrls[index]);
       _photoUrls.removeAt(index);
     });
   }
@@ -251,29 +252,42 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
     String newTitle = _titleController.text.trim();
     String newMessage = _messageController.text.trim();
 
+    // Sprawdź, czy jest co najmniej jedno zdjęcie
+    if (_photoUrls.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ogłoszenie musi mieć co najmniej jedno zdjęcie.'),
+        ),
+      );
+      return;
+    }
+
     database.editPost(widget.postID, newTitle, newMessage).then((_) {
+      // Usuń zdjęcia oznaczone do usunięcia
+      for (String photoUrl in _photosToDelete) {
+        database.deletePhotoFromPost(widget.postID, photoUrl);
+      }
+
+      // Dodaj nowe zdjęcia
       if (_newPhotos.isNotEmpty) {
         database.addPhotosToPost(widget.postID, _newPhotos).then((_) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyPostPage(
-                postID: widget.postID,
-              ),
-            ),
-          );
+          _navigateToPostPage();
         });
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyPostPage(
-              postID: widget.postID,
-            ),
-          ),
-        );
+        _navigateToPostPage();
       }
     });
+  }
+
+  void _navigateToPostPage() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyPostPage(
+          postID: widget.postID,
+        ),
+      ),
+    );
   }
 }
 
