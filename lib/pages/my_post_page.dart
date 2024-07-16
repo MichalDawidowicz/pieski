@@ -297,6 +297,12 @@ class _MyPostPageState extends State<MyPostPage> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.pop(context); // Zamknięcie okna dialogowego
+              },
+              child: Text("Anuluj",style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
                 int stars = int.tryParse(starsController.text) ?? 0;
                 String description = descriptionController.text.trim();
 
@@ -327,14 +333,9 @@ class _MyPostPageState extends State<MyPostPage> {
                   ));
                 }
               },
-              child: Text("Dodaj"),
+              child: Text("Dodaj",style: TextStyle(color: Colors.black54)),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Zamknięcie okna dialogowego
-              },
-              child: Text("Anuluj"),
-            ),
+
           ],
         );
       },

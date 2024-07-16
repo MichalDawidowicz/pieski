@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ogloszenia/components/my_button.dart';
 import 'package:ogloszenia/components/my_textfield.dart';
 
 import '../helper/helper_functions.dart';
+import 'forgotPassword_page.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onTap;
@@ -68,8 +70,16 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text("Zresetuj hasło",
-                  style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context){
+                        return ForgotPasswordPage();
+                          },),
+                      );},
+                    child: Text("Zresetuj hasło",
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                  ),
                 ],
               ),
               const SizedBox(height: 11),
