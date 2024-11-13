@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   Future<File> compressImage(File imageFile) async {
     img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
 
-    // Zmniejsz rozmiar zdjęcia do maksymalnej szerokości 800 pikseli
+    // Zmniejsz rozmiar zdjęcia na 200x200px
     img.Image resizedImage = img.copyResize(image!, width: 200, height: 200);
 
     // Zapisz zmniejszone zdjęcie do pliku tymczasowego

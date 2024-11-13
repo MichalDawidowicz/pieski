@@ -153,14 +153,14 @@ class _EditMyPostPageState extends State<EditMyPostPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Anuluj'),
+            child: Text('Anuluj',style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _markPhotoForDeletion(index);
             },
-            child: Text('Usuń'),
+            child: Text('Usuń',style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
