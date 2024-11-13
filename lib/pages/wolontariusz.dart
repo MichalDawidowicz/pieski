@@ -137,57 +137,65 @@ class _WolontariuszState extends State<Wolontariusz> {
                       } else if (snapshot.hasError) {
                         return Text('Błąd: ${snapshot.error}');
                       } else if (snapshot.hasData) {
-                        double averageRating =
-                        calculateAverageRating(snapshot.data!);
-                        int roundedRating = averageRating.round();
-                        List<Widget> starIcons = [];
-                        for (int i = 0; i < roundedRating; i++) {
-                          starIcons.add(Icon(Icons.star, color: Colors.yellow));
-                        }
-                        return Column(
-                          children: [
-                            Text(
-                              'Średnia ocena: ${averageRating.toStringAsFixed(1)}',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            SizedBox(width: 5),
-                            Center(
-                              child: Row(
-                                children: [
-                                  ...starIcons,
-                                ],
-                                mainAxisAlignment: MainAxisAlignment.center,
+                        if (snapshot.data!.docs.isEmpty) {
+                          // No reviews case
+                          return Text(
+                            "Brak recenzji",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          );
+                        } else {
+                          // Display reviews and average rating
+                          double averageRating = calculateAverageRating(snapshot.data!);
+                          int roundedRating = averageRating.round();
+                          List<Widget> starIcons = [];
+                          for (int i = 0; i < roundedRating; i++) {
+                            starIcons.add(Icon(Icons.star, color: Colors.yellow));
+                          }
+                          return Column(
+                            children: [
+                              Text(
+                                'Średnia ocena: ${averageRating.toStringAsFixed(1)}',
+                                style: TextStyle(fontSize: 18),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                            Text("Recenzje:"),
-                            SizedBox(height: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: snapshot.data!.docs.map((DocumentSnapshot<dynamic> document) {
-                                Map<String, dynamic> data = document.data()!;
-                                int stars = data['rating'];
-                                String description = data['comment'] ?? '';
-                                return Container(
-                                  margin: EdgeInsets.symmetric(vertical: 5),
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Ocena: $stars'),
-                                      if(description.isNotEmpty)
-                                        Text('Opis: $description'),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        );
+                              SizedBox(width: 5),
+                              Center(
+                                child: Row(
+                                  children: [
+                                    ...starIcons,
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text("Recenzje:"),
+                              SizedBox(height: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: snapshot.data!.docs.map((DocumentSnapshot<dynamic> document) {
+                                  Map<String, dynamic> data = document.data()!;
+                                  int stars = data['rating'];
+                                  String description = data['comment'] ?? '';
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(vertical: 5),
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Ocena: $stars'),
+                                        if (description.isNotEmpty)
+                                          Text('Opis: $description'),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          );
+                        }
                       } else {
                         return SizedBox.shrink();
                       }

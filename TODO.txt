@@ -1,1 +1,10 @@
 --
+Dodać info o tym kto i za co wystawił opinie
+(po kliknięciu w opinie pokaze za co zostala wystawiona-
+-opis ogloszenia+dane wystawiającego?)
+Komunikacja właściciel- wolontariusz(chat?)
+Zdjęcie na profilu, oferty?
+ew wyrozniona oferta, aby po wejsciu w profil mozna bylo zobaczyć kto co chce robić
+
+**Wygląd**
+
