@@ -13,33 +13,51 @@ class UsersPage extends StatefulWidget {
 class _UsersPageState extends State<UsersPage> {
   final FirestoreDatabase database = FirestoreDatabase();
   final TextEditingController editingController = TextEditingController();
-  String searchText="";
+  String searchText = "";
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( // Dodaj GestureDetector jako rodzica Scaffoldu
+    return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus(); // Schowaj klawiaturę po dotknięciu ekranu
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: Icon(Icons.list),
-          title: Text("Lista ogłoszeń"),
+          title: const Text("Lista ogłoszeń")
         ),
         body: Column(
           children: [
             Container(
-              child: TextField(controller: editingController,),
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: editingController,
+                      decoration: InputDecoration(
+                        hintText: "Szukaj...",
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      setState(() {
+                        searchText = editingController.text;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  searchText=editingController.text;
-                });
-              },
-            ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             Expanded(
               child: StreamBuilder(
                 stream: database.getPostSearchStream(searchText),
@@ -65,25 +83,41 @@ class _UsersPageState extends State<UsersPage> {
                       final post = posts[index];
                       String title = post['PostTitle'];
                       String message = post['PostMessage'];
-                      String userEmail = post['UserEmail']; // Dodaj pobieranie adresu URL zdjęcia
+                      String userEmail = post['UserEmail'];
 
                       return GestureDetector(
-                        child: ListTile(
-                          title: Text(title),
-                          subtitle: Text(message + "\n" + userEmail),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PostPage(
-                                  title: title,
-                                  message: message,
-                                  userEmail: userEmail,
-                                  id: post.id,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent.withOpacity(0.1 * (index % 2 + 1)), // Zmienny kolor
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.blueAccent),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              title,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                              "$message",
+                              style: TextStyle(color: Colors.black87),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostPage(
+                                    title: title,
+                                    message: message,
+                                    userEmail: userEmail,
+                                    id: post.id,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       );
                     },
@@ -117,7 +151,7 @@ class _UsersPageState extends State<UsersPage> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.settings),
+                icon: Icon(Icons.person),
                 onPressed: () {
                   Navigator.pushNamed(context, '/profile_page');
                 },

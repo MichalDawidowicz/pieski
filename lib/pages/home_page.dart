@@ -31,26 +31,18 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController postController = TextEditingController();
   List<File> _images = [];
-  bool _isPosting = false; // Dodajemy zmienną _isPosting
+  bool _isPosting = false;
 
-  // Funkcja do zmniejszenia rozmiaru zdjęcia
   Future<File> compressImage(File imageFile) async {
     img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
-
-    // Zmniejsz rozmiar zdjęcia na 200x200px
     img.Image resizedImage = img.copyResize(image!, width: 200, height: 200);
-
-    // Zapisz zmniejszone zdjęcie do pliku tymczasowego
     final tempDir = await Directory.systemTemp;
     final compressedImageFile = File('${tempDir.path}/compressed_image.jpg')
-      ..writeAsBytesSync(
-          img.encodeJpg(resizedImage, quality: 50)); // 85 to wartość jakości
-
+      ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 50));
     return compressedImageFile;
   }
 
   bool isButtonEnabled() {
-    // Sprawdź, czy tytuł, opis i przynajmniej jedno zdjęcie zostało dodane
     return titleController.text.isNotEmpty &&
         postController.text.isNotEmpty &&
         _images.isNotEmpty;
@@ -59,37 +51,50 @@ class _HomePageState extends State<HomePage> {
   Future<void> postMessage() async {
     if (isButtonEnabled()) {
       setState(() {
-        _isPosting = true; // Ustawiamy _isPosting na true podczas dodawania wpisu
+        _isPosting = true;
       });
+
+      // Wyświetlenie dialogu z komunikatem
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Dodawanie wpisu, czekaj..."),
+              ],
+            ),
+          );
+        },
+      );
 
       String title = titleController.text;
       String post = postController.text;
       List<String> photoUrls = [];
 
-      // Prześlij każde zdjęcie do Firebase Storage i uzyskaj jego URL
       for (File image in _images) {
         File compressedImage = await compressImage(image);
-        String photoUrl = await database.uploadImageToFirebaseStorage(
-            compressedImage);
+        String photoUrl =
+        await database.uploadImageToFirebaseStorage(compressedImage);
         photoUrls.add(photoUrl);
       }
 
-      // Dodaj post z listą URL-i zdjęć
       await database.addPostWithPhotos(
           Post(title: title, post: post, photoUrls: photoUrls));
 
+      Navigator.pop(context); // Zamknij dialog
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Dodano wpis'),
-          duration: Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('Dodano wpis')),
       );
 
       titleController.clear();
       postController.clear();
       setState(() {
         _images.clear();
-        _isPosting = false; // Po dodaniu wpisu, ustawiamy _isPosting z powrotem na false
+        _isPosting = false;
       });
 
       Navigator.pushReplacement(
@@ -100,62 +105,49 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Tytuł, treść i co najmniej jedno zdjęcie są wymagane'),
-          duration: Duration(seconds: 2),
         ),
       );
     }
   }
 
-  // Funkcja do pobrania zdjęcia z galerii lub z aparatu
   Future<void> pickImage(ImageSource source) async {
     if (_images.length < 3) {
       final pickedFile = await ImagePicker().pickImage(source: source);
-
       if (pickedFile != null) {
         setState(() {
           _images.add(File(pickedFile.path));
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Nie wybrano zdjęcia '),
-            duration: Duration(seconds: 2),
-          ),
+          SnackBar(content: Text('Nie wybrano zdjęcia')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Możesz dodać maksymalnie 3 zdjęcia'),
-          duration: Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('Możesz dodać maksymalnie 3 zdjęcia')),
       );
     }
   }
 
-  // Funkcja do usuwania zdjęcia
   void removeImage(int index) {
     setState(() {
       _images.removeAt(index);
     });
   }
 
-  // Funkcja do zmiany zdjęcia
   Future<void> changeImage(int index) async {
-    final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.camera);
-
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       setState(() {
         _images[index] = File(pickedFile.path);
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Wyłącz klawiaturę po dotknięciu ekranu poza obszarem klawiatury
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -193,7 +185,6 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          // Pokaż listę opcji dla klikniętego zdjęcia
                           showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
@@ -211,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     ListTile(
                                       leading: Icon(Icons.camera_alt),
-                                      title: Text('Wykonaj zdjęcie ponownie'),
+                                      title: Text('Zrób zdjęcie ponownie'),
                                       onTap: () {
                                         changeImage(index);
                                         Navigator.pop(context);
@@ -233,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.camera),
+                icon: Icon(Icons.camera_alt, size: 30),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -266,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               MyPostButton(
-                onTap: _isPosting ? null : postMessage, // Dodaj logikę do przycisku
+                onTap: _isPosting ? null : postMessage,
               ),
               GestureDetector(
                 onTap: () {
@@ -274,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pushNamed(context, '/add_offer');
                 },
                 child: Text("Chcesz dodać ofertę? Kliknij tutaj"),
-              )
+              ),
             ],
           ),
         ),
